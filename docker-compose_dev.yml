@@ -3,7 +3,7 @@ services:
   app:
     # image: ms-apprein-js:1.0
     build:
-      #     dockerfile: ./buildDocker/local.DockerFile
+      dockerfile: ./dev.DockerFile
       context: .
     ports:
       - 5001:5001
