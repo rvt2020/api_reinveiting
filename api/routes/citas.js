@@ -6,7 +6,7 @@ const bitacora = require("../../utils/bitacora");
 
 module.exports = async app => {
   // LISTA DE CITAS
-  app.get("/api/v1.0/citas", async (req, res, next) => {
+  app.get( `/api/${process.env.VERSION}/citas`, async (req, res, next) => {
     try {
       let query;
       query = `select * from recitope.sp_mostrar_citas('', '')`;
@@ -26,7 +26,7 @@ module.exports = async app => {
     }
   });
 
-  app.get("/api/v1.0/citas/:no_busque/:ti_busque", async (req, res, next) => {
+  app.get(`/api/${process.env.VERSION}/citas/:no_busque/:ti_busque`, async (req, res, next) => {
     try {
       let query;
       const no_busque = req.params.no_busque;
@@ -53,7 +53,7 @@ module.exports = async app => {
   });
 
   // AGREGAR CITA
-  app.post("/api/v1.0/citas", async (req, res, next) => {
+  app.post(`/api/${process.env.VERSION}/citas`, async (req, res, next) => {
     try {
       var co_usuari = req.body.co_usuari;
       var co_docide = req.body.co_docide;
@@ -95,7 +95,7 @@ module.exports = async app => {
   });
 
   // INGRESAR VEHICULO
-  app.post("/api/v1.0/citas/ingresar_vehicu", async (req, res, next) => {
+  app.post(`/api/${process.env.VERSION}/citas/ingresar_vehicu`, async (req, res, next) => {
     try {
       console.log(req.body);
       var per_reg = req.body.per_reg;
@@ -164,7 +164,7 @@ module.exports = async app => {
   });
 
   // ACTUALIZAR CITAS
-  app.put("/api/v1.0/citas", async (req, res, next) => {
+  app.put(`/api/${process.env.VERSION}/citas`, async (req, res, next) => {
     try {
       const co_citope = req.body.co_citope;
       var co_usuari = req.body.co_usuari;
