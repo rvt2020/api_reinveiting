@@ -243,9 +243,9 @@ module.exports = async (app) => {
             }else{
                 if(ti_modrep.toUpperCase() == '1'){ // Chapa tu Taxi || Moto Chamba || Moto Lineal 
                     query = `select 
-                        ti_landin, no_tiplan, 
-                        ca_precal, ca_rechaz, 
-                        ca_singes, ca_totges
+                    ti_landin, no_tiplan, ca_precal, 
+                    ca_rechaz, ca_sinter, ca_singes, 
+                    ca_totges
                     from recomerc.fb_report_gestio(
                         '${fe_regdes}',
                         '${fe_reghas}',
@@ -253,9 +253,9 @@ module.exports = async (app) => {
                     );`;
                 }else if(ti_modrep.toUpperCase() == '2'){
                     query = `select 
-                        ti_landin, no_tiplan, no_zongeo,
-                        ca_precal, ca_rechaz, 
-                        ca_singes, ca_totges
+                    ti_landin, no_tiplan, no_zongeo,
+                    ca_precal, ca_rechaz, ca_sinter, 
+                    ca_singes, ca_totges
                     from recomerc.fb_report_gestio(
                         '${fe_regdes}',
                         '${fe_reghas}',
@@ -263,9 +263,9 @@ module.exports = async (app) => {
                     );`;   
                 }else if(ti_modrep.toUpperCase() == '3'){
                     query = `select 
-                        ti_landin, no_tiplan, no_asesor,
-                        no_zongeo, ca_precal, ca_rechaz, 
-                        ca_singes, ca_totges
+                    ti_landin, no_tiplan, no_asesor,
+                    no_zongeo, ca_precal, ca_rechaz, 
+                    ca_sinter, ca_singes, ca_totges
                     from recomerc.fb_report_gestio(
                         '${fe_regdes}',
                         '${fe_reghas}',
