@@ -30,6 +30,11 @@ module.exports = async (app) => {
         var co_estciv = req.body.co_estciv;
         var co_nivedu = req.body.co_nivedu ? req.body.co_nivedu : null;
         var ti_perfil = req.body.ti_perfil ? req.body.ti_perfil : null;
+        var ti_combus2 = req.body.ti_combus2 ? req.body.ti_combus2 : null;
+        var nu_anoveh = req.body.nu_anoveh ? req.body.nu_anoveh : null;
+        var no_marveh = req.body.no_marveh ? req.body.no_marveh : null;
+        var no_modveh = req.body.no_modveh ? req.body.no_modveh : null;
+
 
         console.log(ti_landin);
         console.log(no_apepat);
@@ -51,7 +56,11 @@ module.exports = async (app) => {
         console.log(co_estciv);
         console.log(co_nivedu);
         console.log(ti_perfil);
-    
+        console.log(ti_combus2);
+        console.log(nu_anoveh);
+        console.log(no_marveh);
+        console.log(no_modveh);
+        
         //INSERT LANDING
         query1 = `select * from recomerc.fb_insert_landin(
             ${ti_landin},
@@ -73,7 +82,11 @@ module.exports = async (app) => {
             '${ti_vehper}',
             ${ti_combus},
             ${co_nivedu},
-            '${ti_perfil}'
+            '${ti_perfil}',
+	        ${ti_combus2},
+            ${nu_anoveh},
+            '${no_marveh}',
+            '${no_modveh}'
         );`;
 
         console.log(query1);
