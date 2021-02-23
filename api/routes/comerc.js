@@ -155,7 +155,7 @@ module.exports = async (app) => {
     });
 
     
-    // MUESTRA LA LISTA DE LANDING
+    // MUESTRA LA LISTA DE LANDING SIN GESTIONAR O SIN FINALIZAR
     app.post(`/api/${process.env.VERSION}/comerc/listar_landin`, async (req, res, next) => {
         try {            
             var fe_regdes = req.body.fe_regdes;
@@ -223,6 +223,78 @@ module.exports = async (app) => {
         }
     
     })
+
+    // MUESTRA LA LISTA DE LANDING PRECALIFICADOS O RECHAZADOS
+    app.post(`/api/${process.env.VERSION}/comerc/listar_landin_prerec`, async (req, res, next) => {
+        try {            
+            var fe_regdes = req.body.fe_regdes;
+            var fe_reghas = req.body.fe_reghas;            
+            var ti_landin = req.body.ti_landin;
+            var co_person = req.body.co_person;
+            var ti_estado = req.body.ti_estado;
+            var query;
+            
+            
+            if (fe_regdes == null || fe_regdes.trim() == ''){
+                res.json({ res: 'ko', message: "Por favor defina Fecha inicio."}).status(500)
+            }else if(fe_reghas == null || fe_reghas.trim() == ''){
+                res.json({ res: 'ko', message: "Por favor defina Fecha Hasta."}).status(500)
+            }else if(ti_landin == null || ti_landin.trim() == ''){
+                res.json({ res: 'ko', message: "Por favor defina el tipo de landing"}).status(500)
+            }else{
+                if(ti_landin.toUpperCase() == '1' || ti_landin.toUpperCase() == '2'){ // Chapa tu Taxi || Moto Chamba || Moto Lineal 
+                    query = `select 
+                        co_landin, no_tiplan, fe_regist, no_tipdoc, co_docide, no_apepat, 
+                        no_apemat, no_nombre, fe_nacimi, no_estciv, nu_telefo, no_correo,
+                        no_nivedu, no_perfil, no_liccon, de_experi, no_depart, no_provin, 
+                        no_distri, no_estado, no_respon
+                    from recomerc.fb_listar_landin(
+                        '${fe_regdes}',
+                        '${fe_reghas}',
+                        '${ti_landin}',
+                        ${co_person},
+                        ${ti_estado}
+                    );`;
+                }else if(ti_landin.toUpperCase() == '3'){
+                    query = `select 
+                        co_landin, no_tiplan, fe_regist, no_tipnac, no_tipdoc, 
+                        co_docide, no_apepat, no_apemat, no_nombre, fe_nacimi, 
+                        nu_telefo, no_liccon, no_correo, no_estado, no_respon
+                    from recomerc.fb_listar_landin(
+                        '${fe_regdes}',
+                        '${fe_reghas}',
+                        '${ti_landin}',
+                        ${ti_estado}
+                    );`;   
+                }else if(ti_landin.toUpperCase() == '4'){
+                    query = `select 
+                        co_landin, no_tiplan, fe_regist, co_docide, no_apepat,
+                        no_apemat, no_nombre, no_tipdoc, fe_nacimi, nu_telefo, 
+                        co_plaveh, no_tipcom, no_vehper, no_estado, no_respon
+                    from recomerc.fb_listar_landin(
+                        '${fe_regdes}',
+                        '${fe_reghas}',
+                        '${ti_landin}',
+                        ${co_person},
+                        ${ti_estado}
+                    );`;   
+                }
+                
+                bitacora.control(query, req.url)
+                const resultado = await BD.storePostgresql(query);
+                if (resultado.codRes != 99) {
+                    // con esto muestro msj
+                    res.json({ res: 'ok', message: "Success", resultado}).status(200)
+                } else {
+                    res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+                }
+            }
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
+        }
+    
+    })
+
 
     // REPORTE DE GESTIONES
     app.post(`/api/${process.env.VERSION}/comerc/report_gestio`, async (req, res, next) => {
@@ -337,6 +409,89 @@ module.exports = async (app) => {
         }
     
     })
+
+    /// INSERTAR EL ARCADJ DE LANDING ///
+    app.post(`/api/${process.env.VERSION}/comerc/insert_arcadj`, async (req, res, next) => {
+        try {
+        let query1;
+
+        var co_landin = req.body.co_landin;
+        var ti_docume = req.body.ti_docume;
+        var co_arcadj = req.body.co_arcadj;
+        var ti_accion = req.body.ti_accion;
+
+        query1 = `select * from recomerc.fb_insert_arcadj(
+                    ${co_landin},
+                    ${ti_docume},
+                    '${co_arcadj}',
+                    '${ti_accion}'
+                )`;
+
+        bitacora.control(query1, req.url);
+        const operac = await BD.storePostgresql(query1);
+        // con esto muestro msj
+        if (operac.codRes != 99) {
+            // con esto muestro msj
+            res.json({ res: "ok", message: "Success", operac }).status(200);
+        } else {
+            res
+            .json({ res: "ko", message: "Error en la query", operac })
+            .status(500);
+        }
+        } catch (error) {
+        res.json({ res: "ko", message: "Error controlado", error }).status(500);
+        }
+    });
+    
+    /// INSERTAR EL ARCADJ DE LANDING ///
+    app.post(`/api/${process.env.VERSION}/comerc/update_landin`, async (req, res, next) => {
+        try {
+        let query1;
+
+        var co_landin = req.body.co_landin;
+        var co_produc = req.body.co_produc;
+        var co_entida = req.body.co_entida;
+        var co_tippla = req.body.co_tippla;
+        var il_exacvr = req.body.il_exacvr;
+        var ti_estcvr = req.body.ti_estcvr;
+        var il_comite = req.body.il_comite;
+        var ti_estcmt = req.body.ti_estcmt;
+        var es_carapr = req.body.es_carapr;
+        var fe_activa = req.body.fe_activa;
+        var fe_desemb = req.body.fe_desemb;
+        var co_result = req.body.co_result;
+
+        query1 = `select * from recomerc.fb_update_landin(
+                    ${co_landin},
+                    ${co_produc},
+                    ${co_entida},
+                    ${co_tippla},
+                    ${il_exacvr},
+                    ${ti_estcvr},
+                    ${il_comite},
+                    ${ti_estcmt},
+                    ${es_carapr},
+                    '${fe_activa}',
+                    '${fe_desemb}',
+                    ${co_result}
+                )`;
+
+        bitacora.control(query1, req.url);
+        const operac = await BD.storePostgresql(query1);
+        // con esto muestro msj
+        if (operac.codRes != 99) {
+            // con esto muestro msj
+            res.json({ res: "ok", message: "Success", operac }).status(200);
+        } else {
+            res
+            .json({ res: "ko", message: "Error en la query", operac })
+            .status(500);
+        }
+        } catch (error) {
+        res.json({ res: "ko", message: "Error controlado", error }).status(500);
+        }
+    });
+    
     // --------------------------------- COMBOS DE BITÁCORA ---------------------------------------------------
     
     // COMBO DE ESTADO DE LA LLAMADA
@@ -506,6 +661,99 @@ module.exports = async (app) => {
     
     })
 
+    // COMBO DE TIPO DE PRODUCTO
+    app.get(`/api/${process.env.VERSION}/comerc/tcproduc`, async (req, res, next) => {
+        try {            
+            var query;
+            query = `
+                select co_produc, no_produc
+                from recomerc.tcproduc
+                order by 1;
+            `;  
+            bitacora.control(query, req.url)
+            const resultado = await BD.storePostgresql(query);
+            if (resultado.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", resultado}).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+            }            
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
+        }
+    
+    })
+
+    // COMBO DE TIPO DE PLAN
+    app.get(`/api/${process.env.VERSION}/comerc/tctippla`, async (req, res, next) => {
+        try {            
+            var query;
+            query = `
+                select co_tippla, no_tippla
+                from recomerc.tctippla
+                order by 1;
+            `;  
+            bitacora.control(query, req.url)
+            const resultado = await BD.storePostgresql(query);
+            if (resultado.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", resultado}).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+            }            
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
+        }
+    
+    })
+    
+    // COMBO DE ENTIDAD
+    app.get(`/api/${process.env.VERSION}/comerc/tcentida`, async (req, res, next) => {
+        try {            
+            var query;
+            query = `
+                select pj.co_perjur, pj.no_comerc 
+                from pbperson.tbperjur pj, pbperson.tbperson pe 
+                where pj.co_perjur = pe.co_person 
+                and pe.co_docide in ('20606118687','20438563084','20102881347')
+                order by 2;
+            `;  
+            bitacora.control(query, req.url)
+            const resultado = await BD.storePostgresql(query);
+            if (resultado.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", resultado}).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+            }            
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
+        }
+    
+    })
+    
+    // COMBO DE DOCUMENTOS
+    app.get(`/api/${process.env.VERSION}/comerc/tcdocume`, async (req, res, next) => {
+        try {            
+            var query;
+            query = `
+                select ti_docume, no_docume
+                from wfpublic.tcdocume
+                order by no_docume;
+            `;  
+            bitacora.control(query, req.url)
+            const resultado = await BD.storePostgresql(query);
+            if (resultado.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", resultado}).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+            }            
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
+        }
+    
+    })
     
 
 }
