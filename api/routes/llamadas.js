@@ -6,7 +6,7 @@ const saltRounds = 10
 module.exports = async (app) => {
 
 /// INSERTAR DE GESTIONES DE LLAMADAS
-app.post(`/api/${process.env.VERSION}/llamad/insert_llamad`, async (req, res, next) => {
+  app.post(`/api/${process.env.VERSION}/llamad/insert_llamad`, async (req, res, next) => {
     try {
       let query1;
       
@@ -53,8 +53,8 @@ app.post(`/api/${process.env.VERSION}/llamad/insert_llamad`, async (req, res, ne
       
       query = `select 
                 co_client, no_client, nu_telefo, co_plaveh, no_marveh,
-                no_modveh, ti_client, no_tipcli, ti_servic, no_tipser,
-                km_manten, fe_ulttra, ti_estado
+                no_modveh, no_tipcli, no_tipser, km_manten, fe_ulttra, 
+                ti_estado
               from reoperac.fb_listar_seguim_manten(
                   '${no_client}'
               );`;
@@ -71,5 +71,27 @@ app.post(`/api/${process.env.VERSION}/llamad/insert_llamad`, async (req, res, ne
         res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
     }
   });
+
+  app.get(`/api/${process.env.VERSION}/llamad/tcestlla`, async (req, res, next) => {
+    try {            
+        var query;
+        query = `   
+            select co_estlla, no_estlla
+            from recomerc.tcestlla
+            order by 1;
+        `;  
+        bitacora.control(query, req.url)
+        const resultado = await BD.storePostgresql(query);
+        if (resultado.codRes != 99) {
+            // con esto muestro msj
+            res.json({ res: 'ok', message: "Success", resultado}).status(200)
+        } else {
+            res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+        }            
+    } catch (error) {
+        res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
+    }
+
+  })
     
 }
