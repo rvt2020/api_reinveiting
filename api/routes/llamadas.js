@@ -11,12 +11,14 @@ module.exports = async (app) => {
       let query1;
       
       var co_usuari = req.body.co_usuari;
+      var co_person = req.body.co_person;
       var co_estlla = req.body.co_estlla;
       var co_resges = req.body.co_resges;
-      var fe_vollla = req.body.fe_vollla;
+      var fe_vollla = req.body.fe_vollla ? req.body.fe_vollla : null; // fecha cita -> tipo fecha
       var no_coment = req.body.no_coment;
-      
+
       console.log(co_usuari);
+      console.log(co_person);
       console.log(co_estlla);
       console.log(co_resges);
       console.log(fe_vollla);
@@ -27,7 +29,8 @@ module.exports = async (app) => {
         ${co_usuari},
         ${co_person},
         ${co_estlla},
-        '${fe_vollla}',
+        ${co_resges},
+        ${fe_vollla},
         '${no_coment}'
         )`;
       console.log(query1);
@@ -71,27 +74,5 @@ module.exports = async (app) => {
         res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
     }
   });
-
-  app.get(`/api/${process.env.VERSION}/llamad/tcestlla`, async (req, res, next) => {
-    try {            
-        var query;
-        query = `   
-            select co_estlla, no_estlla
-            from recomerc.tcestlla
-            order by 1;
-        `;  
-        bitacora.control(query, req.url)
-        const resultado = await BD.storePostgresql(query);
-        if (resultado.codRes != 99) {
-            // con esto muestro msj
-            res.json({ res: 'ok', message: "Success", resultado}).status(200)
-        } else {
-            res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
-        }            
-    } catch (error) {
-        res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
-    }
-
-  })
     
 }

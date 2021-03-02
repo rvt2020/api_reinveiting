@@ -220,6 +220,18 @@ module.exports = async (app) => {
                         '${ti_landin}',
                         ${co_person}
                     );`;   
+                }else if(ti_landin.toUpperCase() == '5'){
+                    query = `select 
+                        co_landin, no_tiplan, fe_regist, co_docide, no_apepat,
+                        no_apemat, no_nombre, no_tipdoc, fe_nacimi, nu_telefo, 
+                        co_plaveh, no_depart, no_provin, no_distri, no_tipcom, 
+                        no_tipcom2, no_estado, no_respon
+                    from recomerc.fb_listar_landin(
+                        '${fe_regdes}',
+                        '${fe_reghas}',
+                        '${ti_landin}',
+                        ${co_person}
+                    );`;   
                 }
                 
                 bitacora.control(query, req.url)
@@ -236,7 +248,7 @@ module.exports = async (app) => {
         }
     
     })
-
+    /*
     // MUESTRA LA LISTA DE LANDING PRECALIFICADOS O RECHAZADOS
     app.post(`/api/${process.env.VERSION}/comerc/listar_landin_prerec`, async (req, res, next) => {
         try {            
@@ -307,7 +319,7 @@ module.exports = async (app) => {
         }
     
     })
-
+    */
 
     // REPORTE DE GESTIONES
     app.post(`/api/${process.env.VERSION}/comerc/report_gestio`, async (req, res, next) => {
