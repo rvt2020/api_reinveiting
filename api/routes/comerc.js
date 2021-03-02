@@ -224,8 +224,8 @@ module.exports = async (app) => {
                     query = `select 
                         co_landin, no_tiplan, fe_regist, co_docide, no_apepat,
                         no_apemat, no_nombre, no_tipdoc, fe_nacimi, nu_telefo, 
-                        co_plaveh, no_depart, no_provin, no_distri, no_tipcom, 
-                        no_tipcom2, no_estado, no_respon
+                        co_plaveh, no_marmod, no_depart, no_provin, no_distri, 
+                        no_tipcom, no_tipcom2, no_estado, no_respon
                     from recomerc.fb_listar_landin(
                         '${fe_regdes}',
                         '${fe_reghas}',
