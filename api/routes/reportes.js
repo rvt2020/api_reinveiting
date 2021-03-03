@@ -188,7 +188,7 @@ module.exports = async (app) => {
                         co_plaveh, no_marveh, no_modveh, nu_anomod, no_colveh, 
                         nu_serveh, nu_motveh, ti_servic, se_ventas, se_costos,
                         se_margen, se_rentab, ma_ventas, ma_costos, ma_margen,
-                        ma_rentab, ma_sd, to_ventas, to_costos, to_margen, to_rentab
+                        ma_rentab, ma_sd, to_ventas, im_totigv, to_costos, to_margen, to_rentab
                     from reoperacfbmostrar_produccion_operaciones(
                         '${cod_ope}',
                         '${pla_veh}',
@@ -200,7 +200,7 @@ module.exports = async (app) => {
                     query = `select 
                         no_period, no_estado, se_ventas, se_costos,
                         se_margen, se_rentab, ma_ventas, ma_costos, ma_margen,
-                        ma_rentab, ma_sd, to_ventas, to_costos, to_margen, to_rentab
+                        ma_rentab, ma_sd, to_ventas, im_totigv, to_costos, to_margen, to_rentab
                     from reoperacfbmostrar_produccion_operaciones(
                         '${cod_ope}',
                         '${pla_veh}',
