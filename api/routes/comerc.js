@@ -249,7 +249,6 @@ module.exports = async (app) => {
     
     })
     /*
-    // MUESTRA LA LISTA DE LANDING PRECALIFICADOS O RECHAZADOS
     app.post(`/api/${process.env.VERSION}/comerc/listar_landin_prerec`, async (req, res, next) => {
         try {            
             var fe_regdes = req.body.fe_regdes;

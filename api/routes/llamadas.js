@@ -14,7 +14,7 @@ module.exports = async (app) => {
       var co_person = req.body.co_person;
       var co_estlla = req.body.co_estlla;
       var co_resges = req.body.co_resges;
-      var fe_vollla = req.body.fe_vollla ? req.body.fe_vollla : null; // fecha cita -> tipo fecha
+      var fe_vollla = req.body.fe_vollla; // fecha cita -> tipo fecha
       var no_coment = req.body.no_coment;
 
       console.log(co_usuari);
@@ -30,7 +30,7 @@ module.exports = async (app) => {
         ${co_person},
         ${co_estlla},
         ${co_resges},
-        ${fe_vollla},
+        '${fe_vollla}',
         '${no_coment}'
         )`;
       console.log(query1);
@@ -73,6 +73,34 @@ module.exports = async (app) => {
     } catch (error) {
         res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
     }
+  });
+
+  // MUESTRA LA LISTA DE BITÁCORA
+  app.post(`/api/${process.env.VERSION}/llamad/listar_bitlla`, async (req, res, next) => {
+    try {   
+        var co_person = req.body.co_person;         
+        var query;
+        query = `   
+            select  
+              co_llamad, fe_llamad, no_usuari, no_person,
+              co_plaveh, no_estlla, no_resges, fe_vollla,
+              no_coment
+            from rellamad.fb_listar_bitlla(
+                ${co_person}
+            );`;
+            
+        bitacora.control(query, req.url)
+        const resultado = await BD.storePostgresql(query);
+        if (resultado.codRes != 99) {
+            // con esto muestro msj
+            res.json({ res: 'ok', message: "Success", resultado}).status(200)
+        } else {
+            res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+        }            
+    } catch (error) {
+        res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
+    }
+
   });
     
 }

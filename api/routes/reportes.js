@@ -176,17 +176,15 @@ module.exports = async (app) => {
             
             if (cod_ope == null || cod_ope.trim() == ''){cod_ope = '';}
             if (pla_veh == null || pla_veh.trim() == ''){pla_veh = '';}
+            if (fec_des == null || fec_des.trim() == ''){fec_des = '';}
+            if (fec_has == null || fec_has.trim() == ''){fec_has = '';}
             
-            if (fec_des == null || fec_des.trim() == ''){
-                res.json({ res: 'ko', message: "Por favor defina Fecha inicio."}).status(500)
-            }else if(fec_has == null || fec_has.trim() == ''){
-                res.json({ res: 'ko', message: "Por favor defina Fecha Hasta."}).status(500)
-            }else if(tip_rep == null || tip_rep.trim() == ''){
+            if(tip_rep == null || tip_rep.trim() == ''){
                 res.json({ res: 'ko', message: "Por favor defina el tipo de reporte (R,D)"}).status(500)
             }else{
                 if(tip_rep.toUpperCase() == 'D'){ // DETALLADO
                     query = `select 
-                        fe_inipro, fe_finpro, co_operac, no_operac, no_person,
+                        fe_inipro, fe_finpro, co_operac, no_operac, no_estado, no_person,
                         co_plaveh, no_marveh, no_modveh, nu_anomod, no_colveh, 
                         nu_serveh, nu_motveh, ti_servic, se_ventas, se_costos,
                         se_margen, se_rentab, ma_ventas, ma_costos, ma_margen,
@@ -200,7 +198,7 @@ module.exports = async (app) => {
                     );`;
                 }else if(tip_rep.toUpperCase() == 'R'){
                     query = `select 
-                        no_period, se_ventas, se_costos,
+                        no_period, no_estado, se_ventas, se_costos,
                         se_margen, se_rentab, ma_ventas, ma_costos, ma_margen,
                         ma_rentab, ma_sd, to_ventas, to_costos, to_margen, to_rentab
                     from reoperacfbmostrar_produccion_operaciones(
