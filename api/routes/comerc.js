@@ -61,7 +61,7 @@ module.exports = async (app) => {
         console.log(no_marveh);
         console.log(no_modveh);
         
-        //INSERT LANDING
+        //INSERT LANDINGS
         query1 = `select * from recomerc.fb_insert_landin(
             ${ti_landin},
             '${no_apepat}',
@@ -114,12 +114,6 @@ module.exports = async (app) => {
         var co_estlla = req.body.co_estlla ? req.body.co_estlla : null; // estado de la llamada -> tcestlla
         var co_resges = req.body.co_resges ? req.body.co_resges : null; // resultado de la gestion -> tcresges
         var no_coment = req.body.no_coment; // comentario
-        var co_estdoc = req.body.co_estdoc ? req.body.co_estdoc : null; // estado del documento -> tcestdoc
-        var ti_expsis = req.body.ti_expsis ? req.body.ti_expsis : null; // tipo de exé de sistema -> tcexpsis
-        var co_expedi = req.body.co_expedi; // codigo de expediente
-        var il_conver = req.body.il_conver ? `${req.body.il_conver}` : null; // converus -> tcvalcvr
-        var fe_citcvr = req.body.fe_citcvr ? req.body.fe_citcvr : null; // fecha cita -> tipo fecha
-        var co_rescvr = req.body.co_rescvr ? req.body.co_rescvr : null; // resultado converus -> tcrescvr
         var co_result = req.body.co_result ? req.body.co_result : null; // resultado de gestion -> tcresult
         
         console.log(co_landin);
@@ -127,29 +121,15 @@ module.exports = async (app) => {
         console.log(co_estlla);
         console.log(co_resges);
         console.log(no_coment);
-        console.log(co_estdoc);
-        console.log(ti_expsis);
-        console.log(co_expedi);
-        console.log(il_conver);
-        console.log(fe_citcvr);
-        console.log(co_rescvr);
         console.log(co_result);
 
-
-
-        //INSERT LANDING
+        //INSERT LANDING DE BITACORAS
         query1 = `select * from recomerc.fb_insert_bitges(
             ${co_landin},
             ${ps_regist},
             ${co_estlla},
             ${co_resges},
             '${no_coment}',
-            ${co_estdoc},
-            ${ti_expsis},
-            '${co_expedi}',
-            ${il_conver},
-            ${fe_citcvr},
-            ${co_rescvr},
             ${co_result}
         );`;
 
