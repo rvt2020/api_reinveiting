@@ -18,7 +18,7 @@ module.exports = async (app) => {
             }
             bitacora.control(query, req.url)
             const personas = await BD.storePostgresql(query);
-            //console.log("chamex: " + personas.length);
+            
             // con esto muestro msj
             if (personas.codRes != 99) {
                 // con esto muestro msj
