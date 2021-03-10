@@ -488,9 +488,9 @@ module.exports = async (app) => {
             }else{
                 var v_opemat = 1;
             };
-            if (v_opemat == 1){
+            /*if (v_opemat == 1){
                 res.json({ res: 'ko', message: "El material seleccionado ya se encuntra agregado a la operacion."}).status(500)
-            }else{            
+            }else{*/         
                 query1 = `
                     insert into reoperac.tbopemat (
                         co_opeveh, co_operac, 
@@ -516,7 +516,7 @@ module.exports = async (app) => {
                 } else {
                     res.json({ res: 'ko', message: "Error en la query", result }).status(500)
                 }
-            }
+            //}
         } catch (error) {
             res.json({ res: 'ko', message: "Error controlado", error }).status(500)
         }
