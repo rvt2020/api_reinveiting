@@ -269,8 +269,8 @@ module.exports = async (app) => {
             }else{
                 query = `     
                 select 
-                    or_numbre, no_client, co_plaveh, nu_telefo, no_marcav,
-                    no_modelo, ti_client, fe_entreg, km_priing, no_tipser,      
+                    or_numbre, no_client, co_plaveh, nu_telefo, no_marcav, no_modelo, 
+                    ti_client, fe_entreg, km_priing, no_tipser, fe_mangen, ca_diaatr,      
                     fe_actchi, fec_1k, fec_5k, fec_10k, fec_15k, fec_20k, fec_25k, 
                     fec_30k, fec_35k, fec_40k, fec_45k, fec_50k, fec_55k, 
                     fec_60k, fec_65k, fec_70k, fec_75k, fec_80k, fec_85k, 
