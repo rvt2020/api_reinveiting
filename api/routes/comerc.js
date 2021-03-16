@@ -204,7 +204,7 @@ module.exports = async (app) => {
                     query = `select 
                         co_landin, no_tiplan, fe_regist, co_docide, no_apepat,
                         no_apemat, no_nombre, no_tipdoc, fe_nacimi, nu_telefo, 
-                        co_plaveh, no_marmod, no_depart, no_provin, no_distri, 
+                        co_plaveh, no_marmod, nu_anoveh, no_depart, no_provin, no_distri, 
                         no_tipcom, no_tipcom2, no_estado, no_respon
                     from recomerc.fb_listar_landin(
                         '${fe_regdes}',
@@ -228,8 +228,8 @@ module.exports = async (app) => {
         }
     
     })
-    /*
-    app.post(`/api/${process.env.VERSION}/comerc/listar_landin_prerec`, async (req, res, next) => {
+    
+    app.post(`/api/${process.env.VERSION}/comerc/listar_landin_result`, async (req, res, next) => {
         try {            
             var fe_regdes = req.body.fe_regdes;
             var fe_reghas = req.body.fe_reghas;            
@@ -252,7 +252,7 @@ module.exports = async (app) => {
                         no_apemat, no_nombre, fe_nacimi, no_estciv, nu_telefo, no_correo,
                         no_nivedu, no_perfil, no_liccon, de_experi, no_depart, no_provin, 
                         no_distri, no_estado, no_respon
-                    from recomerc.fb_listar_landin(
+                    from recomerc.fb_listar_landin_result(
                         '${fe_regdes}',
                         '${fe_reghas}',
                         '${ti_landin}',
@@ -264,10 +264,11 @@ module.exports = async (app) => {
                         co_landin, no_tiplan, fe_regist, no_tipnac, no_tipdoc, 
                         co_docide, no_apepat, no_apemat, no_nombre, fe_nacimi, 
                         nu_telefo, no_liccon, no_correo, no_estado, no_respon
-                    from recomerc.fb_listar_landin(
+                    from recomerc.fb_listar_landin_result(
                         '${fe_regdes}',
                         '${fe_reghas}',
                         '${ti_landin}',
+                        ${co_person},
                         ${ti_estado}
                     );`;   
                 }else if(ti_landin.toUpperCase() == '4'){
@@ -275,7 +276,20 @@ module.exports = async (app) => {
                         co_landin, no_tiplan, fe_regist, co_docide, no_apepat,
                         no_apemat, no_nombre, no_tipdoc, fe_nacimi, nu_telefo, 
                         co_plaveh, no_tipcom, no_vehper, no_estado, no_respon
-                    from recomerc.fb_listar_landin(
+                    from recomerc.fb_listar_landin_result(
+                        '${fe_regdes}',
+                        '${fe_reghas}',
+                        '${ti_landin}',
+                        ${co_person},
+                        ${ti_estado}
+                    );`;   
+                }else if(ti_landin.toUpperCase() == '5'){
+                    query = `select 
+                        co_landin, no_tiplan, fe_regist, co_docide, no_apepat,
+                        no_apemat, no_nombre, no_tipdoc, fe_nacimi, nu_telefo, 
+                        co_plaveh, no_marmod, nu_anoveh, no_depart, no_provin, no_distri, 
+                        no_tipcom, no_tipcom2, no_estado, no_respon
+                    from recomerc.fb_listar_landin_result(
                         '${fe_regdes}',
                         '${fe_reghas}',
                         '${ti_landin}',
@@ -298,7 +312,7 @@ module.exports = async (app) => {
         }
     
     })
-    */
+    
 
     // REPORTE DE GESTIONES
     app.post(`/api/${process.env.VERSION}/comerc/report_gestio`, async (req, res, next) => {
@@ -425,11 +439,11 @@ module.exports = async (app) => {
         var ti_accion = req.body.ti_accion;
 
         query1 = `select * from recomerc.fb_insert_arcadj(
-                    ${co_landin},
-                    ${ti_docume},
-                    '${co_arcadj}',
-                    '${ti_accion}'
-                )`;
+            ${co_landin},
+            ${ti_docume},
+            '${co_arcadj}',
+            '${ti_accion}'
+        )`;
 
         bitacora.control(query1, req.url);
         const operac = await BD.storePostgresql(query1);
@@ -463,7 +477,6 @@ module.exports = async (app) => {
         var es_carapr = req.body.es_carapr;
         var fe_activa = req.body.fe_activa;
         var fe_desemb = req.body.fe_desemb;
-        var co_result = req.body.co_result;
 
         query1 = `select * from recomerc.fb_update_landin(
                     ${co_landin},
@@ -475,9 +488,8 @@ module.exports = async (app) => {
                     ${il_comite},
                     ${ti_estcmt},
                     ${es_carapr},
-                    '${fe_activa}',
-                    '${fe_desemb}',
-                    ${co_result}
+                    ${fe_activa},
+                    ${fe_desemb}
                 )`;
 
         bitacora.control(query1, req.url);
@@ -493,6 +505,31 @@ module.exports = async (app) => {
         }
         } catch (error) {
         res.json({ res: "ko", message: "Error controlado", error }).status(500);
+        }
+    });
+    
+    app.post(`/api/${process.env.VERSION}/comerc/listar_arcadj_landin`, async (req, res, next) => {
+        try {
+          let query1;
+          var co_landin = req.body.co_landin;
+    
+          query1 = `select * from recomerc.fb_listar_arcadj_landin( 
+                    cast (${co_landin} as integer)
+                )`;
+    
+          bitacora.control(query1, req.url);
+          const operac = await BD.storePostgresql(query1);
+          // con esto muestro msj
+          if (operac.codRes != 99) {
+            // con esto muestro msj
+            res.json({ res: "ok", message: "Success", operac }).status(200);
+          } else {
+            res
+              .json({ res: "ko", message: "Error en la query", operac })
+              .status(500);
+          }
+        } catch (error) {
+          res.json({ res: "ko", message: "Error controlado", error }).status(500);
         }
     });
     
