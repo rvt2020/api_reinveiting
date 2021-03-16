@@ -153,7 +153,7 @@ module.exports = async (app) => {
 
     //////////////////// mostrar info de operacion (ABRIR OPERACION)
 
-    // listado que muestra vehiculos enlazados al ingreso VEH. 
+    // listado que muestra vehiculos enlazados al ingreso VEHICULO
     app.get(`/api/${process.env.VERSION}/operacflujo/abrir_operacion/:cod_ope`, async (req, res, next) => {
         try {
             var cod_ope = req.params.cod_ope;
