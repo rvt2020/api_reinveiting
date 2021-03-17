@@ -157,6 +157,7 @@ module.exports = async (app) => {
     app.get(`/api/${process.env.VERSION}/operacflujo/abrir_operacion/:cod_ope`, async (req, res, next) => {
         try {
             var cod_ope = req.params.cod_ope;
+
             let q_opera = `select * from reoperac.fbmostrar_datos_operac(
                 cast ('${cod_ope}' as integer)
             );`;
@@ -197,12 +198,15 @@ module.exports = async (app) => {
                 cast ('${cod_ope}' as integer)
             )`; 
             
+            
+
             bitacora.control(q_opera, req.url)
             bitacora.control(q_vehic, req.url)
             bitacora.control(q_clien, req.url)
             bitacora.control(q_servi, req.url)
             bitacora.control(q_mater, req.url)
             bitacora.control(q_matve, req.url)
+            
             const operac = await BD.storePostgresql(q_opera);
             const vehicu = await BD.storePostgresql(q_vehic);
             const client = await BD.storePostgresql(q_clien);
