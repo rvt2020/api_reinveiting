@@ -225,8 +225,11 @@ module.exports = async (app) => {
             if (materi.codRes == 99) {
                 res.json({ res: 'ko', message: "Error en la query material", materi }).status(500)
             };
-
-            res.json({ res: 'ok', message: "Success", operac, vehicu, client, servic, materi}).status(200)
+            if (matven.codRes == 99) {
+                res.json({ res: 'ko', message: "Error en la query material", matven }).status(500)
+            };
+            
+            res.json({ res: 'ok', message: "Success", operac, vehicu, client, servic, materi, matven}).status(200)
             
         } catch (error) {
             res.json({ res: 'ko', message: "Error controlado", error }).status(500)
