@@ -160,17 +160,21 @@ module.exports = async (app) => {
             let q_opera = `select * from reoperac.fbmostrar_datos_operac(
                 cast ('${cod_ope}' as integer)
             );`;
+            
             let q_vehic = `
                 select 
                     ve.co_plaveh, ma.no_marveh,
                     mo.no_modveh, vv.no_verveh,
                     ve.nu_anomod, ve.no_colveh,
-                    ve.nu_serveh, ve.nu_motveh
-                from reoperac.tbopeveh op, wfvehicu.tbvehicu ve
+                    ve.nu_serveh, ve.nu_motveh,
+                    pe.co_docide, pbperson.f_no_person(pe.co_person) no_client
+                from pbperson.tbperson pe, reoperac.tbopecli oc, reoperac.tbopeveh op, wfvehicu.tbvehicu ve
                 left join wfvehicu.tcverveh vv on ve.co_verveh = vv.co_verveh
                 left join wfvehicu.tcmodveh mo on vv.co_modveh = mo.co_modveh
                 left join wfvehicu.tcmarveh ma on mo.co_marveh = ma.co_marveh
-                where op.co_vehicu = ve.co_vehicu
+                where pe.co_person = oc.co_client 
+                and oc.co_operac = op.co_operac
+                and op.co_vehicu = ve.co_vehicu
                 and op.co_operac = cast ('${cod_ope}' as integer)
             `;
             let q_clien = `
@@ -188,16 +192,23 @@ module.exports = async (app) => {
             let q_mater = `select * from reoperac.fbmostrar_materiales_operac(
                 cast ('${cod_ope}' as integer)
             )`; 
+
+            let q_matve = `select * from reoperac.fbmostrar_materventa_operac(
+                cast ('${cod_ope}' as integer)
+            )`; 
+            
             bitacora.control(q_opera, req.url)
             bitacora.control(q_vehic, req.url)
             bitacora.control(q_clien, req.url)
             bitacora.control(q_servi, req.url)
             bitacora.control(q_mater, req.url)
+            bitacora.control(q_matve, req.url)
             const operac = await BD.storePostgresql(q_opera);
             const vehicu = await BD.storePostgresql(q_vehic);
             const client = await BD.storePostgresql(q_clien);
             const servic = await BD.storePostgresql(q_servi);
             const materi = await BD.storePostgresql(q_mater);
+            const matven = await BD.storePostgresql(q_matve);
             // con esto muestro msj
             if (operac.codRes == 99) {
                 res.json({ res: 'ko', message: "Error en la query operacio", operac }).status(500)
