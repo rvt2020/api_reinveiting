@@ -5,7 +5,7 @@ const saltRounds = 10
 
 module.exports = async (app) => {
 
-///////////////////////////////// MODULO NUEVA OPERACIÓN/////////////////
+// MODULO NUEVA OPERACIÓN/////////////////
     //mostrar ingresos de vehiculos
     app.post(`/api/${process.env.VERSION}/operacflujo/mostrar_ingreso`, async (req, res, next) => {
         try {
@@ -970,7 +970,7 @@ module.exports = async (app) => {
 
     })
 
-// para combo de tecnicos a asignar
+// COMBO DE TECNICOS QUE SERÁN ASIGNADOS
     app.get(`/api/${process.env.VERSION}/operacflujo/combo_tecnico`, async (req, res, next) => {
         try {
             let query1 = `
@@ -997,7 +997,7 @@ module.exports = async (app) => {
 
     })
 
-// asignar tecnico a cada Item servicio de operacion
+// ASIGNAR AL TECNICO
     app.post(`/api/${process.env.VERSION}/operacflujo/asigna_tecnico_servicio`, async (req, res, next) => {
         try {
             let query1;
@@ -1038,8 +1038,8 @@ module.exports = async (app) => {
 
     })
 
-/////////////////////////////////// INICIAL ITEM (SERVICIO) DE OPERACION OPCION 5
-// mostrar lista de servicio-ordeservicio pendientes para dar inicio y o fin
+// LISTAR SERVICIOS INICIO Y FIN DE LA OPERACION
+
     app.post(`/api/${process.env.VERSION}/operacflujo/lista_opeser_ini_fin`, async (req, res, next) => {
         try {
             let query1;
@@ -1077,7 +1077,7 @@ module.exports = async (app) => {
         }
     })
 
-// Dar INICIO al servicio de una orden de servico
+//  INICIO DEL TRABAJO
     app.post(`/api/${process.env.VERSION}/operacflujo/iniciar_servicio_ordser`, async (req, res, next) => {
         try {
             let query1;
@@ -1111,7 +1111,7 @@ module.exports = async (app) => {
         }
     })
 
-// Dar INICIO al servicio de una orden de servico
+// FIN DE OPERACION
     app.post(`/api/${process.env.VERSION}/operacflujo/finalizar_servicio_ordser`, async (req, res, next) => {
         try {
             let query1;
@@ -1145,8 +1145,158 @@ module.exports = async (app) => {
         }
     })
 
+// TERMINADOS PARA FACTURAR OPERACION
+    app.post(`/api/${process.env.VERSION}/operacflujo/insert_factur_operac`, async (req, res, next) => {
+        try {
+            let query1;
+            var pn_regist = req.body.pn_regist;
+            var fe_emisio = req.body.fe_emisio;
+            var nu_docume = req.body.nu_docume;
+            var co_docide = req.body.co_docide;
+            var no_direcc = req.body.no_direcc;
+            var ti_descri = req.body.ti_descri;
+            var no_descri = req.body.no_descri;
+            var no_coment = req.body.no_coment;
+            var co_operac = req.body.co_operac;
+            
+            /*
+            query1 = `
+                select * from reoperac.fb_insert_factur(
+                    ${pn_regist},
+                    '${fe_emisio}',
+                    '${nu_docume}',
+                    '${co_docide}',
+                    '${no_direcc}',
+                    ${ti_descri},
+                    '${no_descri}',
+                    '${no_coment}',
+                    '${co_operac}'
+                    
+                );
+            `;
+            */
+           
+           query1 = `
+                select * from wffactur.fb_insert_factur_operac(
+                    cast('${pn_regist}' as integer),
+                    '${fe_emisio}',    
+                    '${nu_docume}',
+                    '${co_docide}',
+                    '${no_direcc}',
+                    cast('${ti_descri}' as integer),
+                    '${no_descri}',
+                    '${no_coment}',
+                    '${co_operac}'
+                );
+            `;
 
-/////////////////////////////////// INGRESO VEHICULAR
+            bitacora.control(query1, req.url)
+            const result = await BD.storePostgresql(query1);
+            // con esto muestro msj
+            if (result.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", result}).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", result }).status(500)
+            }            
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado", error }).status(500)
+        }
+    })
+
+    // FACTURAR OPERACION
+    app.post(`/api/${process.env.VERSION}/operacflujo/listar_operac_termin`, async (req, res, next) => {
+        try {
+            let query1;
+            var co_operac = req.body.co_operac;
+            var co_plaveh = req.body.co_plaveh;
+            var fe_ciedes = req.body.fe_ciedes;
+            var fe_ciehas = req.body.fe_ciehas;
+
+            if (co_operac == null || co_operac.trim() == ''){
+                co_operac = '';
+            }
+            if (co_plaveh == null || co_plaveh.trim() == ''){
+                co_plaveh = '';
+            }      
+            if (fe_ciedes == null || fe_ciedes.trim() == ''){
+                fe_ciedes = '';
+            }      
+            if (fe_ciehas == null || fe_ciehas.trim() == ''){
+                fe_ciehas = '';
+            } 
+
+            query1 = `
+                select * from reoperac.fb_listar_operac_termin(
+                    '${co_operac}', 
+                    '${co_plaveh}',
+                    '${fe_ciedes}',
+                    '${fe_ciehas}'
+                );
+            `;
+            bitacora.control(query1, req.url)
+            const resultado = await BD.storePostgresql(query1);
+            // con esto muestro msj
+            if (resultado.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", resultado}).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+            }            
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado", error }).status(500)
+        }
+    })
+
+
+// TIPO DE DOCUMENTO
+    app.get(`/api/${process.env.VERSION}/operacflujo/tipdoc`, async (req, res, next) => {
+        try {
+            let query;
+            query = `select * from wfpublic.tcdocume where ti_docume in (4, 11)`;
+            
+            bitacora.control(query, req.url)
+            const resultado = await BD.storePostgresql(query);
+            // con esto muestro msj
+            if (resultado.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", resultado }).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+            }
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado", error }).status(500)
+        }
+
+    })
+
+// TIPO DE DESCRIPCION
+app.get(`/api/${process.env.VERSION}/operacflujo/tipdes`, async (req, res, next) => {
+    try {
+        let query;
+        query = `
+            select * from (
+                select 1 as co_tipdes, 'General' as no_tipdes union
+                select 2, 'Detallado'     
+            ) as tx`;
+        
+        bitacora.control(query, req.url)
+        const resultado = await BD.storePostgresql(query);
+        // con esto muestro msj
+        if (resultado.codRes != 99) {
+            // con esto muestro msj
+            res.json({ res: 'ok', message: "Success", resultado }).status(200)
+        } else {
+            res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+        }
+    } catch (error) {
+        res.json({ res: 'ko', message: "Error controlado", error }).status(500)
+    }
+
+})
+
+
+// INGRESO VEHICULAR
     app.post(`/api/${process.env.VERSION}/operacflujo/ingreso_vehicular`, async (req, res, next) => {
         try {
             let query1;
@@ -1163,67 +1313,42 @@ module.exports = async (app) => {
             var swt_sal = req.body.swt_sal;
             var fec_sal = req.body.fec_sal;
 
-            // if (per_reg == null || per_reg.trim() == ''){
-            //     res.json({ res: 'ko', message: "Definir Persona que regista salida." }).status(500);
-            // }else if (cod_veh == null || cod_veh.trim() == ''){
-            //     res.json({ res: 'ko', message: "Definir código del vehículo." }).status(500);
-            // }else if (val_kil == null || val_kil.trim() == ''){
-            //     res.json({ res: 'ko', message: "Definir el kilometraje del vehículo." }).status(500);
-            // }else if (doc_ide == null || doc_ide.trim() == ''){
-            //     res.json({ res: 'ko', message: "Definir documento de identidad del cliente." }).status(500);
-            // }else if (ape_pat == null || ape_pat.trim() == ''){
-            //     res.json({ res: 'ko', message: "Definir apellido paterno del cliente." }).status(500);
-            // }else if (ape_mat == null || ape_mat.trim() == ''){
-            //     res.json({ res: 'ko', message: "Definir apellido materno del cliente." }).status(500);
-            // }else if (nom_cli == null || nom_cli.trim() == ''){
-            //     res.json({ res: 'ko', message: "Definir nombre del cliente." }).status(500);
-            // }else if (cen_ope == null || cen_ope.trim() == ''){
-            //     res.json({ res: 'ko', message: "Definir centro de operaciones." }).status(500);
-            // }else if (direcci == null || direcci.trim() == ''){
-            //     res.json({ res: 'ko', message: "Definir dirección del cliente." }).status(500);
-            // }else if (det_ing == null || det_ing.trim() == ''){
-            //     res.json({ res: 'ko', message: "Definir detalle de ingreso." }).status(500);
-            // }else if (swt_sal == null || swt_sal.trim() == ''){
-            //     res.json({ res: 'ko', message: "Definir switch de pronto ingreso" }).status(500);
-            // }else if (swt_sal == '1' && (fec_sal == null || fec_sal.trim() == '')){
-            //     res.json({ res: 'ko', message: "Definir fecha-hora de próxima salida." }).status(500);
-            // } else {           
-                query1 = `
-                    select * from readuana.fb_ingreso_vehicular(
-                        cast('${per_reg}' as integer),
-                        cast('${cod_veh }' as integer),
-                        cast('${val_kil }' as integer),
-                        '${doc_ide}',
-                        '${ape_pat}',
-                        '${ape_mat}',
-                        '${nom_cli}',
-                        cast('${cen_ope}' as integer),
-                        '${direcci}',
-                        '${det_ing}',
-                        '${swt_sal}',
-                        '${fec_sal}'
-                    );
-                `;
-                bitacora.control(query1, req.url)
-                const resulta = await BD.storePostgresql(query1);
+            query1 = `
+                select * from readuana.fb_ingreso_vehicular(
+                    cast('${per_reg}' as integer),
+                    cast('${cod_veh }' as integer),
+                    cast('${val_kil }' as integer),
+                    '${doc_ide}',
+                    '${ape_pat}',
+                    '${ape_mat}',
+                    '${nom_cli}',
+                    cast('${cen_ope}' as integer),
+                    '${direcci}',
+                    '${det_ing}',
+                    '${swt_sal}',
+                    '${fec_sal}'
+                );
+            `;
+                
+            bitacora.control(query1, req.url)
+            const resulta = await BD.storePostgresql(query1);
+            // con esto muestro msj
+            if (resulta.codRes != 99) {
                 // con esto muestro msj
-                if (resulta.codRes != 99) {
-                    // con esto muestro msj
-                    if (resulta[0].co_respue == '-1'){
-                        res.json({ res: 'ko', message: resulta[0].no_respue }).status(500)
-                    }else{
-                        res.json({ res: 'ok', message: resulta[0].no_respue}).status(200)
-                    }
-                } else {
-                    res.json({ res: 'ko', message: "Error en la query", resulta }).status(500)
-                }    
-            // }        
+                if (resulta[0].co_respue == '-1'){
+                    res.json({ res: 'ko', message: resulta[0].no_respue }).status(500)
+                }else{
+                    res.json({ res: 'ok', message: resulta[0].no_respue}).status(200)
+                }
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", resulta }).status(500)
+            }           
         } catch (error) {
             res.json({ res: 'ko', message: "Error controlado", error }).status(500)
         }
     })
 
-///// BUSCAR OPERACION para chamexx
+// BUSCAR OPERACION
     app.post(`/api/${process.env.VERSION}/operacflujo/buscar_operacion`, async (req, res, next) => {
         try {
             let query1;
