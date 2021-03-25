@@ -247,18 +247,59 @@ module.exports = async (app) => {
                 res.json({ res: 'ko', message: "Por favor defina el tipo de landing"}).status(500)
             }else{
                 if(ti_landin.toUpperCase() == '1' || ti_landin.toUpperCase() == '2'){ // Chapa tu Taxi || Moto Chamba || Moto Lineal 
-                    query = `select 
-                        co_landin, no_tiplan, fe_regist, no_tipdoc, co_docide, no_apepat, 
-                        no_apemat, no_nombre, fe_nacimi, no_estciv, nu_telefo, no_correo,
-                        no_nivedu, no_perfil, no_liccon, de_experi, no_depart, no_provin, 
-                        no_distri, no_estado, no_respon
-                    from recomerc.fb_listar_landin_result(
-                        '${fe_regdes}',
-                        '${fe_reghas}',
-                        '${ti_landin}',
-                        ${co_person},
-                        ${ti_estado}
-                    );`;
+                    if (ti_estado.toUpperCase() == '1' || ti_estado.toUpperCase() == '2') {
+                        query = `select 
+                            co_landin, no_tiplan, fe_regist, no_tipdoc, co_docide, no_apepat, 
+                            no_apemat, no_nombre, fe_nacimi, no_estciv, nu_telefo, no_correo,
+                            no_nivedu, no_perfil, no_liccon, de_experi, no_depart, no_provin, 
+                            no_distri, no_estado, no_respon
+                        from recomerc.fb_listar_landin_result(
+                            '${fe_regdes}',
+                            '${fe_reghas}',
+                            '${ti_landin}',
+                            ${co_person},
+                            ${ti_estado}
+                        );`;
+                    } else if (ti_estado.toUpperCase() == '3' || ti_estado.toUpperCase() == '6') {
+                        query = `select 
+                            co_landin, no_tiplan, fe_regist, no_tipdoc, co_docide, no_apepat, 
+                            no_apemat, no_nombre, fe_nacimi, no_estciv, nu_telefo, no_correo,
+                            de_experi, no_depart, no_provin, no_distri, no_produc, no_tippla,
+                            no_entida, no_estado, no_respon
+                        from recomerc.fb_listar_landin_result(
+                            '${fe_regdes}',
+                            '${fe_reghas}',
+                            '${ti_landin}',
+                            ${co_person},
+                            ${ti_estado}
+                        );`;
+                    } else if (ti_estado.toUpperCase() == '4' || ti_estado.toUpperCase() == '7') {
+                        query = `select 
+                            co_landin, no_tiplan, fe_regist, no_tipdoc, co_docide, no_apepat, 
+                            no_apemat, no_nombre, fe_nacimi, no_estciv, nu_telefo, no_correo,
+                            de_experi, no_depart, no_provin, no_distri, no_produc, no_tippla,
+                            no_entida, no_exacvr, no_estado, no_respon
+                        from recomerc.fb_listar_landin_result(
+                            '${fe_regdes}',
+                            '${fe_reghas}',
+                            '${ti_landin}',
+                            ${co_person},
+                            ${ti_estado}
+                        );`;
+                    } else if (ti_estado.toUpperCase() == '5' || ti_estado.toUpperCase() == '8') {
+                        query = `select 
+                            co_landin, no_tiplan, fe_regist, no_tipdoc, co_docide, no_apepat, 
+                            no_apemat, no_nombre, fe_nacimi, no_estciv, nu_telefo, no_correo,
+                            de_experi, no_depart, no_provin, no_distri, no_produc, no_tippla,
+                            no_entida, no_exacvr, fe_activa, fe_desemb, no_estado, no_respon
+                        from recomerc.fb_listar_landin_result(
+                            '${fe_regdes}',
+                            '${fe_reghas}',
+                            '${ti_landin}',
+                            ${co_person},
+                            ${ti_estado}
+                        );`;
+                    }
                 }else if(ti_landin.toUpperCase() == '3'){
                     query = `select 
                         co_landin, no_tiplan, fe_regist, no_tipnac, no_tipdoc, 
@@ -428,6 +469,58 @@ module.exports = async (app) => {
     
     })
 
+    // COMBO SI o NO
+    app.get(`/api/${process.env.VERSION}/comerc/tcafirma`, async (req, res, next) => {
+        try {            
+            var query;
+            query = `   
+                select co_afirma, no_afirma
+                from (
+                    select 1 co_afirma, 'SI' as no_afirma union 
+                    select 2, 'NO'
+                ) as tx
+                order by 1;
+            `;  
+            bitacora.control(query, req.url)
+            const resultado = await BD.storePostgresql(query);
+            if (resultado.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", resultado}).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+            }            
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
+        }
+    
+    })
+
+    // COMBO APROBADO o RECHAZADO
+    app.get(`/api/${process.env.VERSION}/comerc/tcaprrec`, async (req, res, next) => {
+        try {            
+            var query;
+            query = `   
+                select co_aprrec, no_aprrec
+                from (
+                    select 1 co_aprrec, 'APROBADO' as no_aprrec union 
+                    select 2, 'RECHAZADO'
+                ) as tx
+                order by 1;
+            `;  
+            bitacora.control(query, req.url)
+            const resultado = await BD.storePostgresql(query);
+            if (resultado.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", resultado}).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+            }            
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
+        }
+    
+    })
+
     /// INSERTAR EL ARCADJ DE LANDING ///
     app.post(`/api/${process.env.VERSION}/comerc/insert_arcadj`, async (req, res, next) => {
         try {
@@ -488,8 +581,8 @@ module.exports = async (app) => {
                     ${il_comite},
                     ${ti_estcmt},
                     ${es_carapr},
-                    ${fe_activa},
-                    ${fe_desemb}
+                    '${fe_activa}',
+                    '${fe_desemb}'
                 )`;
 
         bitacora.control(query1, req.url);
@@ -775,11 +868,78 @@ module.exports = async (app) => {
     
     // COMBO DE DOCUMENTOS
     app.get(`/api/${process.env.VERSION}/comerc/tcdocume`, async (req, res, next) => {
-        try {            
+        try {  
+            
+            //8	"DNI"
+            //14	"Licencia de Conducir"
+            //9	"Recibo de Luz / Agua"
+            //17  "Tarjeta de Propiedad"
+            //16	"Carta de la asociación de la mototaxi"
             var query;
             query = `
                 select ti_docume, no_docume
                 from wfpublic.tcdocume
+                where ti_docume in (8, 9, 14, 16, 17) 
+                order by no_docume;
+            `;  
+            bitacora.control(query, req.url)
+            const resultado = await BD.storePostgresql(query);
+            if (resultado.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", resultado}).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+            }            
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
+        }
+    
+    })
+    
+    // COMBO DE DOCUMENTOS DE ACTIVACION PRECALIFICADOS
+    app.get(`/api/${process.env.VERSION}/comerc/tcdocumeactivapre`, async (req, res, next) => {
+        try {  
+            
+            //8	"DNI"
+            //14	"Licencia de Conducir"
+            //9	"Recibo de Luz / Agua"
+            //17  "Tarjeta de Propiedad"
+            //16	"Carta de la asociación de la mototaxi"
+            var query;
+            query = `
+                select ti_docume, no_docume
+                from wfpublic.tcdocume
+                where ti_docume in (4, 19, 20) 
+                order by no_docume;
+            `;  
+            bitacora.control(query, req.url)
+            const resultado = await BD.storePostgresql(query);
+            if (resultado.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", resultado}).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+            }            
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
+        }
+    
+    })
+
+    // COMBO DE DOCUMENTOS RECHAZADOS
+    app.get(`/api/${process.env.VERSION}/comerc/tcdocumerechaz`, async (req, res, next) => {
+        try {  
+            
+            //8	"DNI"
+            //14	"Licencia de Conducir"
+            //9	"Recibo de Luz / Agua"
+            //17  "Tarjeta de Propiedad"
+            //16	"Carta de la asociación de la mototaxi"
+            var query;
+            query = `
+                select ti_docume, no_docume
+                from wfpublic.tcdocume
+                where ti_docume in (8, 9) 
                 order by no_docume;
             `;  
             bitacora.control(query, req.url)
