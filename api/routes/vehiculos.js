@@ -30,6 +30,7 @@ module.exports = async (app) => {
 
     })
 
+    
     // AGREGAR VEHICULOS
     app.post(`/api/${process.env.VERSION}/vehiculos`, async (req, res, next) => {
         try {

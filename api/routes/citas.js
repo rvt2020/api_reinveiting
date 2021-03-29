@@ -57,7 +57,9 @@ module.exports = async app => {
     try {
       var co_usuari = req.body.co_usuari;
       var co_docide = req.body.co_docide;
-      var no_person = req.body.no_person;
+      var no_apepat = req.body.no_apepat;
+      var no_apemat = req.body.no_apemat;
+      var no_nombre = req.body.no_nombre;
       var nu_telefo = req.body.nu_telefo;
       var co_plaveh = req.body.co_plaveh;
       var co_modveh = req.body.co_modveh;
@@ -70,7 +72,9 @@ module.exports = async app => {
                 cast (null as integer),
                 '${co_usuari}',
                 '${co_docide}',
-                '${no_person}',
+                '${no_apepat}',
+                '${no_apemat}',
+                '${no_nombre}',
                 '${nu_telefo}',
                 '${co_plaveh}',
                 '${co_modveh}',
@@ -83,7 +87,7 @@ module.exports = async app => {
       const citas = await BD.storePostgresql(query);
       if (citas.codRes != 99) {
         // con esto muestro msj
-        res.json({ res: "ok", message: "Success", citas }).status(200);
+        res.json({ res: 'ok', message: "Se registó la cita correctamente." }).status(200);
       } else {
         res
           .json({ res: "ko", message: "Error en la query", citas })
@@ -92,6 +96,38 @@ module.exports = async app => {
     } catch (error) {
       res.json({ res: "ko", message: "Error controlado", error }).status(500);
     }
+  });
+
+  
+  //COMBO VEHICULOS
+  app.get(`/api/${process.env.VERSION}/citas/combo_vehiculo`, async (req, res, next) => {
+    try {
+        let query1 = `
+            select 
+                ve.co_plaveh,
+                ma.no_marveh,
+                mo.no_modveh,
+                ve.no_colveh,
+                (ve.co_plaveh || ' - ' || ma.no_marveh || ' ' || ve.no_colveh)  as da_vehicu
+            from wfvehicu.tbvehicu ve, wfvehicu.tcverveh vs, wfvehicu.tcmodveh mo, wfvehicu.tcmarveh ma
+            where ve.co_verveh =  vs.co_verveh
+            and vs.co_modveh = mo.co_modveh
+            and mo.co_marveh = ma.co_marveh
+            order by ve.co_vehicu desc 
+        `;
+        bitacora.control(query1, req.url)
+        const vehicu = await BD.storePostgresql(query1);
+        // con esto muestro msj
+        if (vehicu.codRes != 99) {
+            // con esto muestro msj
+            res.json({ res: 'ok', message: "Success", vehicu}).status(200)
+        } else {
+            res.json({ res: 'ko', message: "Error en la query", vehicu }).status(500)
+        }
+    } catch (error) {
+        res.json({ res: 'ko', message: "Error controlado", error }).status(500)
+    }
+
   });
 
   // INGRESAR VEHICULO
