@@ -208,7 +208,7 @@ module.exports = async app => {
 
         // if (fe_tradoc == null || fe_tradoc.trim() == ''){res.json({ res: 'ko', message: "Fecha de Trámite NO esta definido."}).status(500)}
         // else if (de_mottra == null || de_mottra.trim() == ''){res.json({ res: 'ko', message: "Motivo de T/D NO definido."}).status(500)}
-        // else {
+        // else { 
         query1 = `select * from wfalmace.fb_listar_docume_agrega_ingsal(
             '${fe_regist}',
             ${co_person},
