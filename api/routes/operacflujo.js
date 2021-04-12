@@ -1227,7 +1227,20 @@ module.exports = async (app) => {
             } 
 
             query1 = `
-                select * from reoperac.fb_listar_operac_termin(
+                select 
+                    co_operac,
+                    fe_termin,
+                    co_docide,
+                    no_person,
+                    id_operac,
+                    co_plaveh,
+                    no_marveh,
+                    no_modveh,
+                    no_colveh,
+                    im_basimp,
+                    im_totigv,
+                    im_totope
+                from reoperac.fb_listar_operac_termin(
                     '${co_operac}', 
                     '${co_plaveh}',
                     '${fe_ciedes}',
