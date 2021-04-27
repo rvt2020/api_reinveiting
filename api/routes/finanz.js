@@ -235,7 +235,32 @@ module.exports = async app => {
             res.json({ res: "ko", message: "Error controlado", error }).status(500);
         }
     });
-  
+    
+    /// CATALOGO ENTIDAD FINANCIERA ///
+    app.get(`/api/${process.env.VERSION}/finanz/catalogo/tcentfin`, async (req, res, next) => {
+        try {
+            let query1;
+
+            query1 = `
+            select co_entfin, no_entfin
+            from wfpublic.tcentfin
+            order by 2
+            `;
+            bitacora.control(query1, req.url);
+            const operac = await BD.storePostgresql(query1);
+            // con esto muestro msj
+            if (operac.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: "ok", message: "Success", operac }).status(200);
+            } else {
+                res
+                .json({ res: "ko", message: "Error en la query", operac })
+                .status(500);
+            }
+        } catch (error) {
+            res.json({ res: "ko", message: "Error controlado", error }).status(500);
+        }
+    });
     // TIPO DE MONEDA
     app.get(`/api/${process.env.VERSION}/finanz/catalogo/tcmoneda`, async (req, res, next) => {
         try {
