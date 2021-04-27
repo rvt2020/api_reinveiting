@@ -45,42 +45,70 @@ module.exports = async app => {
   /// ACTUALIZAR FACTURA
   app.post(`/api/${process.env.VERSION}/factur/update_factur`, async (req, res, next) => {
     try {
-      let query1;
-
       var co_factur = req.body.co_factur;
-      var co_client = req.body.co_client;
+      var ti_estado = req.body.ti_estado;
+    
+    //update
+    query1 = `select * from refactur.fb_update_factur(
+      ${co_factur},
+      ${ti_estado}
+      )`;
+    console.log(query1);
 
-      if (co_factur == null || co_factur.trim() == "") {
-        res
-          .json({ res: "ko", message: "Código de FV NO está definido." })
-          .status(500);
-      } else {
-        query1 = `select * from refactur.fb_update_factur(
-            cast (${co_factur} as integer),
-            cast (${co_client} as integer)
-        )`;
+    bitacora.control(query1, req.url);
+    const operac = await BD.storePostgresql(query1);
+    // con esto muestro msj
+    if (operac[0].co_respue == "-1") {
+      res.json({ res: "ko", message: operac[0].no_respue }).status(500);
+    }
+    res.json({ res: "ok", message: operac[0].no_respue }).status(200);
+    } catch (error) {
+      res.json({ res: "ko", message: "Error controlado", error }).status(500);
+    }
+  });
 
-        bitacora.control(query1, req.url);
-        const operac = await BD.storePostgresql(query1);
+  /// AMORTIZAR FACTURA
+  app.post(`/api/${process.env.VERSION}/factur/amorti_factur`, async (req, res, next) => {
+    try {
+      let query1;
+      
+      pn_regist = req.body.pn_regist;
+      co_factur = req.body.co_factur;
+      fe_amorti = req.body.fe_amorti;
+      co_entfin = req.body.co_entfin;
+      im_amorti = req.body.im_amorti;
+      im_detrac = req.body.im_detrac;
+      no_coment = req.body.no_coment;
+
+      query1 = `select * from refactur.fb_amorti_factur(
+        ${pn_regist},
+        ${co_factur},
+        '${fe_amorti}',
+        ${co_entfin},
+        ${im_amorti},
+        ${im_detrac},
+        '${no_coment}'
+      )`;
+
+      bitacora.control(query1, req.url);
+      const operac = await BD.storePostgresql(query1);
+      // con esto muestro msj
+      if (operac.codRes != 99) {
         // con esto muestro msj
-        if (operac.codRes != 99) {
-          // con esto muestro msj
-          if (operac[0].co_respue == "-1") {
-            res.json({ res: "ko", message: operac[0].no_respue }).status(500);
-          }
-          res.json({ res: "ok", message: operac[0].no_respue }).status(200);
-        } else {
-          res
-            .json({ res: "ko", message: "Error en la query", operac })
-            .status(500);
+        if (operac[0].co_respue == "-1") {
+          res.json({ res: "ko", message: operac[0].no_respue }).status(500);
         }
+        res.json({ res: "ok", message: operac[0].no_respue }).status(200);
+      } else {
+        res
+          .json({ res: "ko", message: "Error en la query", operac })
+          .status(500);
       }
     } catch (error) {
       res.json({ res: "ko", message: "Error controlado", error }).status(500);
     }
   });
 
-  
   /// ELIMINAR FACTURA
   app.post(`/api/${process.env.VERSION}/factur/delete_factur`, async (req, res, next) => {
     try {
@@ -125,6 +153,7 @@ module.exports = async app => {
       var nu_factur = req.body.nu_factur;
       var ti_estado = req.body.ti_estado;
       var co_operac = req.body.co_operac;
+      var ti_bandej = req.body.ti_bandej;
       
       query1 = `select * from refactur.fb_listar_factur(
             '${fe_regdes}', 
@@ -132,7 +161,8 @@ module.exports = async app => {
             '${no_client}', 
             '${nu_factur}', 
             '${ti_estado}', 
-            '${co_operac}'
+            '${co_operac}', 
+            cast (${ti_bandej} as integer)
         )`;
 
       bitacora.control(query1, req.url);
@@ -185,6 +215,32 @@ module.exports = async app => {
       var co_factur = req.body.co_factur;
 
       query1 = `select * from refactur.fb_listar_detall_factur( 
+                cast (${co_factur} as integer)
+            )`;
+
+      bitacora.control(query1, req.url);
+      const operac = await BD.storePostgresql(query1);
+      // con esto muestro msj
+      if (operac.codRes != 99) {
+        // con esto muestro msj
+        res.json({ res: "ok", message: "Success", operac }).status(200);
+      } else {
+        res
+          .json({ res: "ko", message: "Error en la query", operac })
+          .status(500);
+      }
+    } catch (error) {
+      res.json({ res: "ko", message: "Error controlado", error }).status(500);
+    }
+  });
+
+  /// DETALLE DE AMORTIZACIONES ///
+  app.post(`/api/${process.env.VERSION}/factur/listar_amorti`, async (req, res, next) => {
+    try {
+      let query1;
+      var co_factur = req.body.co_factur;
+
+      query1 = `select * from refactur.fb_listar_amorti_factur( 
                 cast (${co_factur} as integer)
             )`;
 
@@ -295,9 +351,68 @@ module.exports = async app => {
     }
   });
 
+  
+  ///ELIMINAR DETALLE DE LA FACTURA
+  app.post(`/api/${process.env.VERSION}/factur/update_estado`, async (req, res, next) => {
+    try {
+      let query1;
+      
+      var co_factur = req.body.co_factur;
+      var ti_estado = req.body.ti_estado;
+      var co_person = req.body.co_person;
+
+      query1 = `select * from refactur.fb_update_estado(
+            cast (${co_factur} as integer),
+            cast (${ti_estado} as integer),
+            cast (${co_person} as integer)
+        )`;
+
+      bitacora.control(query1, req.url);
+      const operac = await BD.storePostgresql(query1);
+      // con esto muestro msj
+      if (operac.codRes != 99) {
+        // con esto muestro msj
+        res.json({ res: "ok", message: "Success", operac }).status(200);
+      } else {
+        res
+          .json({ res: "ko", message: "Error en la query", operac })
+          .status(500);
+      }
+    } catch (error) {
+      res.json({ res: "ko", message: "Error controlado", error }).status(500);
+    }
+  });
+
+
 
   
   /******************************************** CATALOGOS ************************************/
+  /// CATALOGO ENTIDAD FINANCIERA ///
+  app.get(`/api/${process.env.VERSION}/factur/catalogo/tcentfin`, async (req, res, next) => {
+    try {
+      let query1;
+
+      query1 = `
+        select 1, 2
+        from wfpublic.tcentfin
+        order by 2 
+      `;
+            
+      bitacora.control(query1, req.url);
+      const operac = await BD.storePostgresql(query1);
+      // con esto muestro msj
+      if (operac.codRes != 99) {
+        // con esto muestro msj
+        res.json({ res: "ok", message: "Success", operac }).status(200);
+      } else {
+        res
+          .json({ res: "ko", message: "Error en la query", operac })
+          .status(500);
+      }
+    } catch (error) {
+      res.json({ res: "ko", message: "Error controlado", error }).status(500);
+    }
+  });
 
   /// CATALOGO PROVEEDOR ///
   app.get(`/api/${process.env.VERSION}/factur/catalogo/tctipdoc`, async (req, res, next) => {
@@ -305,10 +420,8 @@ module.exports = async app => {
       let query1;
 
       query1 = `
-            select ti_docume, no_docume
-            from wfpublic.tcdocume
-            where ti_docume in (11, 4)
-            order by 2 
+          select co_entfin, no_entfin
+          from wfpublic.tcentfin
         `;
             
       bitacora.control(query1, req.url);
@@ -335,7 +448,9 @@ module.exports = async app => {
             let query1;
 
             query1 = `
-                select pe.co_person, pbperson.f_no_person(pe.co_person) no_person
+                select 
+                  pe.co_person, 
+                  (pbperson.f_no_person(pe.co_person)||' - '||pbperson.f_co_docide(pe.co_person)) no_person
                 from pbperson.tbperson pe, reoperac.tbopecli oc
                 where pe.co_person = oc.co_client
                 group by 1,2
