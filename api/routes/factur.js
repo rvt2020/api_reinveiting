@@ -261,7 +261,7 @@ module.exports = async app => {
   });
 
   
-  /// LISTAR OPERACIONNES ENCOTRADOS FACTURA ///
+  /// LISTAR OPERACIONNES ENCOTRADOS FACTURAS ///
   app.post(`/api/${process.env.VERSION}/factur/listar_operac_encont`, async (req, res, next) => {
     try {
       let query1;
