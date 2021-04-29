@@ -41,7 +41,6 @@ require('./api/routes/reportes')(app)
 require('./api/routes/almacen')(app)
 require('./api/routes/comerc')(app)
 require('./api/routes/llamadas')(app)
-require('./api/routes/finanz')(app)
 require('./api/routes/factur')(app)
 
 // Registro de puerto y servidor.
