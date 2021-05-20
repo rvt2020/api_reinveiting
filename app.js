@@ -15,33 +15,32 @@ app.use(bodyParser.json());
 // MIDDLEWARE
 app.use(cors());
 
-
 // simple route
 app.get("/", (req, res) => {
   console.log("Webservices Reinventing.");
   res.json({ message: "Webservices Reinventing Pro." });
 });
 
-
 // Rutas
-require('./api/routes/auth')(app)
-require('./api/routes/users')(app)
-require('./api/routes/vehiculos')(app)
-require('./api/routes/marcas')(app)
-require('./api/routes/modelos')(app)
-require('./api/routes/personas')(app)
-require('./api/routes/articulo')(app)
-require('./api/routes/citas')(app)
-require('./api/routes/operac')(app)
-require('./api/routes/ordcom')(app)
-require('./api/routes/tradoc')(app)
-require('./api/routes/tipocita')(app)
-require('./api/routes/operacflujo')(app)
-require('./api/routes/reportes')(app)
-require('./api/routes/almacen')(app)
-require('./api/routes/comerc')(app)
-require('./api/routes/llamadas')(app)
-require('./api/routes/factur')(app)
+require("./api/routes/auth")(app);
+require("./api/routes/users")(app);
+require("./api/routes/vehiculos")(app);
+require("./api/routes/marcas")(app);
+require("./api/routes/modelos")(app);
+require("./api/routes/personas")(app);
+require("./api/routes/articulo")(app);
+require("./api/routes/citas")(app);
+require("./api/routes/operac")(app);
+require("./api/routes/ordcom")(app);
+require("./api/routes/tradoc")(app);
+require("./api/routes/tipocita")(app);
+require("./api/routes/operacflujo")(app);
+require("./api/routes/reportes")(app);
+require("./api/routes/almacen")(app);
+require("./api/routes/comerc")(app);
+require("./api/routes/llamadas")(app);
+require("./api/routes/factur")(app);
+require("./api/routes/pdfs")(app);
 
 // Registro de puerto y servidor.
 app.disable("x-powered-by");
