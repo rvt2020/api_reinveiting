@@ -22,7 +22,7 @@ module.exports = async app => {
           res.json({ res: "ok", message: "Success", operac }).status(200);
         } else {
           res
-            .json({ res: "ko", message: "Error en la query", operac })
+            .json({ res: "ko", message: "Error en la query", operac})
             .status(500);
         }
       } catch (error) {
