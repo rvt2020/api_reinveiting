@@ -16,7 +16,7 @@ module.exports = async app => {
         bitacora.control(query, req.url);
         const operac = await BD.storePostgresql(query);
 
-        // con esto muestro msj
+        // con esto muestro msjs
         if (operac.codRes != 99) {
           // con esto muestro msj
           res.json({ res: "ok", message: "Success", operac }).status(200);
