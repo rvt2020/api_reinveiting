@@ -59,8 +59,6 @@ module.exports = async (app) => {
                 (pbperson.f_no_person(pe.co_person) || '  -  ' || pe.co_docide)  as no_person
             from pbperson.tbperson pe
             left join pbperson.tbpernat pn on pe.co_person = pn.co_pernat 
-            left join pbperson.tbperjur pj on pe.co_person = pj.co_perjur 
-            and pe.co_person not in (4,3)
             order by 2
         `;
             bitacora.control(query1, req.url)
@@ -77,6 +75,35 @@ module.exports = async (app) => {
         }
 
     })
+
+    //combo REFERIDO
+    app.get(`/api/${process.env.VERSION}/operacflujo/combo_referido`, async (req, res, next) => {
+        try {
+            let query1 = `
+            select 
+                co_pernat as co_referi,
+                (
+                    co_pernat::varchar || '  -  ' ||no_apepat||' '||no_apemat||' '||no_nombre
+                )  as no_referi
+            from pbperson.tbpernat
+            where co_pernat not in (1, 2, 5)
+            order by co_pernat, no_apepat
+        `;
+            bitacora.control(query1, req.url)
+            const client = await BD.storePostgresql(query1);
+            // con esto muestro msj
+            if (client.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", client}).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", client }).status(500)
+            }
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado", error }).status(500)
+        }
+
+    })
+
 
     // listado que muestra vehiculos enlazados al ingreso VEH. 
     app.get(`/api/${process.env.VERSION}/operacflujo/lista_vehiculo_ingreso/:cod_adu`, async (req, res, next) => {
@@ -116,6 +143,7 @@ module.exports = async (app) => {
             var cod_adu = req.body.cod_adu;
             var cod_per = req.body.cod_per;
             var cod_usu = req.body.cod_usu;
+            var cod_ref = req.body.cod_ref;
 
             if (cod_adu == null || cod_adu.trim() == ''){
                 res.json({ res: 'ko', message: "El código aduana NO esta definido."}).status(500)
@@ -130,7 +158,8 @@ module.exports = async (app) => {
             query1 = `select * from readuana.fb_genera_opera(
                 cast ('${cod_adu}' as integer),
                 cast ('${cod_per}' as integer),
-                cast ('${cod_usu}' as integer)
+                cast ('${cod_usu}' as integer),
+                ${cod_ref}
              )`;
 
             bitacora.control(query1, req.url)
@@ -168,7 +197,8 @@ module.exports = async (app) => {
                     mo.no_modveh, vv.no_verveh,
                     ve.nu_anomod, ve.no_colveh,
                     ve.nu_serveh, ve.nu_motveh,
-                    pe.co_docide, pbperson.f_no_person(pe.co_person) no_client
+                    pe.co_docide, pbperson.f_no_person(pe.co_person) no_client,
+                    pbperson.f_no_person(oc.co_referi) no_referi
                 from pbperson.tbperson pe, reoperac.tbopecli oc, reoperac.tbopeveh op, wfvehicu.tbvehicu ve
                 left join wfvehicu.tcverveh vv on ve.co_verveh = vv.co_verveh
                 left join wfvehicu.tcmodveh mo on vv.co_modveh = mo.co_modveh
@@ -180,7 +210,8 @@ module.exports = async (app) => {
             `;
             let q_clien = `
                 select tp.ti_person, tp.no_tipper, pe.co_person, 
-                    pbperson.f_no_person(pe.co_person) no_person, pe.co_docide
+                    pbperson.f_no_person(pe.co_person) no_person, pe.co_docide,
+                    pbperson.f_no_person(op.co_referi) no_referi
                 from reoperac.tbopecli op, pbperson.tbperson pe, pbperson.tcdocide td, pbperson.tctipper tp
                 where op.co_client = pe.co_person
                 and pe.ti_docide = td.ti_docide

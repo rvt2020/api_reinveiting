@@ -18,6 +18,7 @@ module.exports = async app => {
       var pn_solici = req.body.pn_solici;
       var il_conigv = req.body.il_conigv;
       var co_tippro = req.body.co_tippro;
+      var co_cencos = req.body.co_cencos;
 
       console.log(pn_regist);
       console.log(pj_provee);
@@ -39,7 +40,8 @@ module.exports = async app => {
         '${fe_ordcom}',
         ${pn_solici},
         ${il_conigv},
-        ${co_tippro}
+        ${co_tippro},
+        ${co_cencos}
         )`;
       console.log(query1);
 
@@ -573,7 +575,45 @@ module.exports = async app => {
                     select 1 as ti_compra, 'Materiales' as no_tipcom
                     union select 2 , 'Servicios'
                     union select 3 , 'Activo Fijo'
-                ) as tx`;
+                    union select 4 , 'Autos y Motos'
+                    
+                ) as tx
+                order by ti_compra`;
+      bitacora.control(query, req.url);
+      const operac = await BD.storePostgresql(query);
+      console.log("chamex:" + operac[0]);
+      // con esto muestro msj
+      if (operac.codRes != 99) {
+        // con esto muestro msj
+        res.json({ res: "ok", message: "Success", operac }).status(200);
+      } else {
+        res
+          .json({ res: "ko", message: "Error en la query", operac })
+          .status(500);
+      }
+    } catch (error) {
+      res.json({ res: "ko", message: "Error controlado", error }).status(500);
+    }
+  });
+
+  /// CENTRO DE COSTO ///
+  app.get(`/api/${process.env.VERSION}/ordcom/tccencos`, async (req, res, next) => {
+    try {
+      let query;
+      //TODO CENTRO DE COSTO VA VINCULADO A UNA SEDE fludin (Gregorio Paredes)
+      query = `
+                select co_cencos, no_cencos
+                from (
+                    select 1 as co_cencos, 'Conversiones' as no_cencos
+                    union select 2, 'Motos 2R - 3R'
+                    union select 3, 'Autos'
+                    union select 4, 'Taller de Reparación'
+                    union select 5, 'LD'
+                    union select 6, 'Gastos Administrativos'
+                    union select 7, 'Gastos Financieros'
+                    union select 8, 'Gerencia'
+                ) as tx
+                order by no_cencos`;
       bitacora.control(query, req.url);
       const operac = await BD.storePostgresql(query);
       console.log("chamex:" + operac[0]);
