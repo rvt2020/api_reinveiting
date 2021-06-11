@@ -18,6 +18,7 @@ module.exports = async app => {
       var il_conigv = req.body.il_conigv;
       var ti_docume = req.body.ti_docume;
       var co_arcadj = req.body.co_arcadj;
+      var co_cencos = req.body.co_cencos;
 
       // if (fe_tradoc == null || fe_tradoc.trim() == ''){res.json({ res: 'ko', message: "Fecha de Trámite NO esta definido."}).status(500)}
       // else if (de_mottra == null || de_mottra.trim() == ''){res.json({ res: 'ko', message: "Motivo de T/D NO definido."}).status(500)}
@@ -31,7 +32,8 @@ module.exports = async app => {
                     '${fe_tradoc}',
                     ${il_conigv},
                     ${ti_docume},
-                    '${co_arcadj}'
+                    '${co_arcadj}',
+                    ${co_cencos}
                 )`;
 
       bitacora.control(query1, req.url);
@@ -477,6 +479,42 @@ module.exports = async app => {
       res.json({ res: "ko", message: "Error controlado", error }).status(500);
     }
   });
+
+   /// CENTRO DE COSTO ///
+   app.get(`/api/${process.env.VERSION}/tradoc/catalogo/tccencos`, async (req, res, next) => {
+    try {
+      let query;
+      //TODO CENTRO DE COSTO VA VINCULADO A UNA SEDE fludin (Gregorio Paredes)
+      query = `
+                select co_cencos, no_cencos
+                from (
+                  select 1 as co_cencos, 'Conversiones' as no_cencos
+                  union select 2, 'Motos 2R - 3R'
+                  union select 3, 'Autos'
+                  union select 4, 'Taller de Reparación'
+                  union select 5, 'LD'
+                  union select 6, 'Gastos Administrativos'
+                  union select 7, 'Gastos Financieros'
+                  union select 8, 'Gerencia'
+                ) as tx
+                order by no_cencos`;
+      bitacora.control(query, req.url);
+      const operac = await BD.storePostgresql(query);
+      console.log("chamex:" + operac[0]);
+      // con esto muestro msj
+      if (operac.codRes != 99) {
+        // con esto muestro msj
+        res.json({ res: "ok", message: "Success", operac }).status(200);
+      } else {
+        res
+          .json({ res: "ko", message: "Error en la query", operac })
+          .status(500);
+      }
+    } catch (error) {
+      res.json({ res: "ko", message: "Error controlado", error }).status(500);
+    }
+  });
+
 
   /// TIPO DE MONEDA
   app.get(`/api/${process.env.VERSION}/tradoc/catalogo/tcmoneda`, async (req, res, next) => {
