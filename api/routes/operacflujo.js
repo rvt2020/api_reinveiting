@@ -457,6 +457,13 @@ module.exports = async (app) => {
                     1, cast('${imp_uni}' as numeric(12,2)),
                     28, cast('${tip_ser}' as smallint)
                 );
+
+                select * 
+                from recomisi.fb_insert_comisi(
+                    cast('${cod_ope}' as integer),
+                    cast('${cod_ser}' as integer),
+                    2
+                );
             `;
 
             bitacora.control(query1, req.url)
@@ -638,9 +645,17 @@ module.exports = async (app) => {
             // }
 
             query1 = `
+                select * 
+                from recomisi.fb_delete_comisi(
+                    cast('${cod_ope}' as integer),
+                    cast('${ope_ser}' as integer)
+                );
+
                 delete from reoperac.tbopeser 
                 where co_operac = cast('${cod_ope}' as integer)
                 and co_opeser = cast('${ope_ser}' as integer);
+
+                
             `;
 
             bitacora.control(query1, req.url)
@@ -913,6 +928,12 @@ module.exports = async (app) => {
                                 fe_aprser = current_timestamp
                             where co_opeser = cast('${ser_mat}' as integer)
                             and co_operac = cast('${cod_ope}' as integer); 
+
+                            update recomisi.tbcomref cr set
+                                ti_estado = 2
+                            from recomisi.trcomope co
+                            where cr.co_comref = co.co_comref
+                            and co.co_operac = cast('${cod_ope}' as integer); 
                         `;
                     } else if (tip_opc.toUpperCase() == 'R'){
                         query1 = `
@@ -1125,7 +1146,17 @@ module.exports = async (app) => {
                         cast('${ord_ser}' as bigint),
                         cast('${ope_ser}' as bigint),
                         'I'
-                    )
+                    );
+
+                    update recomisi.tbcomref cr set
+                        ti_estado = 3
+                    from recomisi.trcomope co
+                    where cr.co_comref = co.co_comref
+                    and co.co_operac = (
+                        select os.co_operac
+                        from reoperac.tbordser os    
+                        where os.co_ordser = cast('${ord_ser}' as integer)
+                    );
                 `;
                 bitacora.control(query1, req.url)
                 const resulta = await BD.storePostgresql(query1);
@@ -1159,7 +1190,17 @@ module.exports = async (app) => {
                         cast('${ord_ser}' as bigint),
                         cast('${ope_ser}' as bigint),
                         'F'
-                    )
+                    );
+
+                    update recomisi.tbcomref cr set
+                        ti_estado = 4
+                    from recomisi.trcomope co
+                    where cr.co_comref = co.co_comref
+                    and co.co_operac = (
+                        select os.co_operac
+                        from reoperac.tbordser os    
+                        where os.co_ordser = cast('${ord_ser}' as integer)
+                    );
                 `;
                 bitacora.control(query1, req.url)
                 const resulta = await BD.storePostgresql(query1);

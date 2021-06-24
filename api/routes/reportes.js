@@ -296,4 +296,48 @@ module.exports = async (app) => {
     
     })
 
+    app.post(`/api/${process.env.VERSION}/referi/referi_comisi`, async (req, res, next) => {
+        try {            
+          var no_client = req.body.no_client;
+          var fe_ciedes = req.body.fe_ciedes;
+          var fe_ciehas = req.body.fe_ciehas;
+    
+          var query;
+          
+          query = `
+              select 
+                no_person,
+                ca_operac,
+                ca_pendie,
+                im_pendie,
+                ca_aproba,
+                im_aproba,
+                ca_proces,
+                im_proces,
+                ca_porpag,
+                im_porpag,
+                ca_pagado,
+                im_pagado,
+                ca_comref,
+                im_comisi
+              from recomisi.fb_referi_comisi(
+                '${no_client}',
+                '${fe_ciedes}',
+                '${fe_ciehas}'
+              );
+            `;
+              
+              bitacora.control(query, req.url)
+              const resultado = await BD.storePostgresql(query);
+              if (resultado.codRes != 99) {
+                  // con esto muestro msj
+                  res.json({ res: 'ok', message: "Success", resultado}).status(200)
+              } else {
+                  res.json({ res: 'ko', message: "Error en la query", resultado }).status(500)
+              }
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado chamo", error }).status(500)
+        }
+      })
+
 }
