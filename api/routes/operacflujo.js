@@ -83,7 +83,7 @@ module.exports = async (app) => {
             select 
                 co_pernat as co_referi,
                 (
-                    co_pernat::varchar || '  -  ' ||no_apepat||' '||no_apemat||' '||no_nombre
+                    no_apepat||' '||no_apemat||' '||no_nombre
                 )  as no_referi
             from pbperson.tbpernat
             where co_pernat not in (1, 2, 5)
@@ -456,13 +456,6 @@ module.exports = async (app) => {
                     1, cast('${imp_uni}' as numeric(12,2)), 
                     1, cast('${imp_uni}' as numeric(12,2)),
                     28, cast('${tip_ser}' as smallint)
-                );
-
-                select * 
-                from recomisi.fb_insert_comisi(
-                    cast('${cod_ope}' as integer),
-                    cast('${cod_ser}' as integer),
-                    2
                 );
             `;
 

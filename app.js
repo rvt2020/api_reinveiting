@@ -38,6 +38,7 @@ require("./api/routes/operacflujo")(app);
 require("./api/routes/reportes")(app);
 require("./api/routes/almacen")(app);
 require("./api/routes/comerc")(app);
+require("./api/routes/comercial")(app);
 require("./api/routes/llamadas")(app);
 require("./api/routes/factur")(app);
 require("./api/routes/pdfs")(app);
