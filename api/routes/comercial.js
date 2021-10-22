@@ -328,7 +328,7 @@ module.exports = async app => {
 
       query1 = `select * from reventas.fb_insert_operac_venta(
             ${co_vehicu},
-            ${co_client},2
+            ${co_client},
             ${co_person},
             ${co_usuari},
             ${co_moneda}
