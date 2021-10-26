@@ -61,4 +61,32 @@ module.exports = async app => {
       }
     }
   )
+
+  app.get(
+    `/api/${process.env.VERSION}/pdf/f_js_docume_ordcom/:co_ordcom`,
+    async (req, res, next) => {
+      try {
+        let query;
+        const co_ordcom = req.params.co_ordcom;
+        query = `select * from reordcom.f_js_docume_ordcom('${co_ordcom}');`;
+        bitacora.control(query, req.url);
+        const ordcom = await BD.storePostgresql(query);
+
+        // Se entrega el vehículo en funcionamiento y en buenas condiciones por los trabajos 
+        // realizados en el taller. 
+        // En señal de conformidad del servicio, el cliente firma el presente documento ....fecha...
+        
+        if (ordcom.codRes != 99) {
+          // con esto muestro msj
+          res.json({ res: "ok", message: "Success", ordcom }).status(200);
+        } else {
+          res
+            .json({ res: "ko", message: "Error en la query", ordcom})
+            .status(500);
+        }
+      } catch (error) {
+        res.json({ res: "ko", message: "Error controlado", error }).status(500);
+      }
+    }
+  )
 };
