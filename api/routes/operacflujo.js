@@ -44,8 +44,6 @@ module.exports = async (app) => {
 
     })
 
-    ///// para ingresar nueva operación
-
     //combo cliente
     app.get(`/api/${process.env.VERSION}/operacflujo/combo_cliente`, async (req, res, next) => {
         try {
@@ -59,7 +57,7 @@ module.exports = async (app) => {
                 (pbperson.f_no_person(pe.co_person) || '  -  ' || pe.co_docide)  as no_person
             from pbperson.tbperson pe
             left join pbperson.tbpernat pn on pe.co_person = pn.co_pernat 
-            order by 2
+            order by 6
         `;
             bitacora.control(query1, req.url)
             const client = await BD.storePostgresql(query1);
@@ -87,7 +85,7 @@ module.exports = async (app) => {
                 )  as no_referi
             from pbperson.tbpernat
             where co_pernat not in (1, 2, 5)
-            order by co_pernat, no_apepat
+            order by 2
         `;
             bitacora.control(query1, req.url)
             const client = await BD.storePostgresql(query1);
@@ -104,6 +102,31 @@ module.exports = async (app) => {
 
     })
 
+    //COMBO CONYUGE
+    app.get(`/api/${process.env.VERSION}/operacflujo/combo_conyuge`, async (req, res, next) => {
+        try {
+            let query1 = `
+            select 
+                co_pernat as co_conyug,
+                pbperson.f_no_person(co_pernat) as no_conyug
+            from pbperson.tbpernat
+            where co_pernat not in (1, 2, 5)
+            order by 2
+        `;
+            bitacora.control(query1, req.url)
+            const client = await BD.storePostgresql(query1);
+            // con esto muestro msj
+            if (client.codRes != 99) {
+                // con esto muestro msj
+                res.json({ res: 'ok', message: "Success", client}).status(200)
+            } else {
+                res.json({ res: 'ko', message: "Error en la query", client }).status(500)
+            }
+        } catch (error) {
+            res.json({ res: 'ko', message: "Error controlado", error }).status(500)
+        }
+
+    })
 
     // listado que muestra vehiculos enlazados al ingreso VEH. 
     app.get(`/api/${process.env.VERSION}/operacflujo/lista_vehiculo_ingreso/:cod_adu`, async (req, res, next) => {
