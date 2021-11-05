@@ -6,7 +6,9 @@ const saltRounds = 10
 // ``
 
 module.exports = async (app) => {
-    // para traer todos los usuarios
+
+     
+    // OBTENER A TODAS LAS PERSONAS NATURALES POR DNI
     app.get(`/api/${process.env.VERSION}/personas/natural/:docide`, async (req, res, next) => {
         try {
             let query;
@@ -32,7 +34,7 @@ module.exports = async (app) => {
 
     })
 
-    // para traer todos los usuarios
+    // OBTENER A TODAS LAS PERSONAS JURUDICAS POR RUC
     app.get(`/api/${process.env.VERSION}/personas/juridica/:docide`, async (req, res, next) => {
         try {
             let query;
@@ -58,7 +60,7 @@ module.exports = async (app) => {
 
     })
 
-    // Para insertar o modificar personas naturales
+    // INSERTAR O MODIFICAR PERSONAS NATURALES
     app.post(`/api/${process.env.VERSION}/personas/natural`, async (req, res, next) => {
         try {
             var doc_ide = req.body.doc_ide;
@@ -76,6 +78,7 @@ module.exports = async (app) => {
             );`;
             bitacora.control(query, req.url)
             const personas = await BD.storePostgresql(query);
+            
             //obtengo el codigo de persona generado para enlazar telefono
             cod_per = personas[0].f_co_pernat;
             if (personas.codRes == 99) {
@@ -101,7 +104,7 @@ module.exports = async (app) => {
 
     })
 
-    // Para insertar o modificar personas juridicas
+    // INSERTAR O MODIFICAR PERSONAS JURÍDICAS
     app.post(`/api/${process.env.VERSION}/personas/juridica`, async (req, res, next) => {
         try {
             var doc_ide = req.body.doc_ide;
@@ -121,7 +124,8 @@ module.exports = async (app) => {
             );`;
             bitacora.control(query, req.url)
             const personas = await BD.storePostgresql(query);
-            //obtengo el codigo de persona generado para enlazar telefono
+            
+            //Obtengo el codigo de persona generado para enlazar telefono
             cod_per = personas[0].f_co_perjur;
             if (personas.codRes == 99) {
                 // con esto muestro msj
