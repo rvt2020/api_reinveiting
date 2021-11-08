@@ -327,15 +327,26 @@ module.exports = async app => {
       var co_moneda = req.body.co_moneda;
       var co_conyug = req.body.co_conyug;
 
-      query1 = `select * from reventas.fb_insert_operac_venta(
+      if (co_conyug == 'undefined') {
+          query1 = `select * from reventas.fb_insert_operac_venta(
             ${co_vehicu},
             ${co_client},
             ${co_person},
             ${co_usuari},
             ${co_moneda},
-            ${co_conyug}
+            null
         )`;
-
+      } else {
+        query1 = `select * from reventas.fb_insert_operac_venta(
+          ${co_vehicu},
+          ${co_client},
+          ${co_person},
+          ${co_usuari},
+          ${co_moneda},
+          ${co_conyug}
+        )`;
+      }
+    
       bitacora.control(query1, req.url);
       const resultado = await BD.storePostgresql(query1);
       // con esto muestro msj
