@@ -372,6 +372,7 @@ module.exports = async app => {
     try {
       let query1;
       
+      var im_preven = req.body.im_preven;
       var co_vehicu = req.body.co_vehicu;
       var va_tipcam = req.body.va_tipcam;
       var ti_desven = req.body.ti_desven;
@@ -380,6 +381,7 @@ module.exports = async app => {
       var va_cuoini = req.body.va_cuoini;
 
       query1 = `select * from reventas.fb_calcul_operac(
+            ${im_preven},
             ${co_vehicu},
             ${va_tipcam},
             ${ti_desven},
