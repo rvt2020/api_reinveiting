@@ -348,19 +348,14 @@ module.exports = async app => {
     }
   });
 
-  /// MANTENIMIENTO DE DETALLE FACTURA ///
-  app.post(`/api/${process.env.VERSION}/factur/manten_detalle_factur`, async (req, res, next) => {
+  /// LISTAR OPERACIONNES FACTURADAS 
+  app.post(`/api/${process.env.VERSION}/factur/listar_operac_factur`, async (req, res, next) => {
     try {
       let query1;
-    
       var co_factur = req.body.co_factur;
-      var co_operac = req.body.co_operac;
-      var ti_accion = req.body.ti_accion;
-
-      query1 = `select * from refactur.fb_manten_detalle_factur(
-            cast (${co_factur} as integer),
-            cast (${co_operac} as integer),
-            '${ti_accion}'
+      
+      query1 = `select * from refactur.fb_listar_operac_factur(
+        cast (${co_factur} as integer)
         )`;
 
       bitacora.control(query1, req.url);
@@ -377,6 +372,75 @@ module.exports = async app => {
     } catch (error) {
       res.json({ res: "ko", message: "Error controlado", error }).status(500);
     }
+  });
+
+  /// LISTAR CARACTERÍSTICA DEL VEHÍCULO
+  app.post(`/api/${process.env.VERSION}/factur/listar_caract_vehicu`, async (req, res, next) => {
+    try {
+      let query1;
+      var co_factur = req.body.co_factur;
+      
+      query1 = `select * from refactur.fb_listar_caract_vehicu(
+        cast (${co_factur} as integer)
+        )`;
+
+      bitacora.control(query1, req.url);
+      const operac = await BD.storePostgresql(query1);
+      // con esto muestro msj
+      if (operac.codRes != 99) {
+        // con esto muestro msj
+        res.json({ res: "ok", message: "Success", operac }).status(200);
+      } else {
+        res
+          .json({ res: "ko", message: "Error en la query", operac })
+          .status(500);
+      }
+    } catch (error) {
+      res.json({ res: "ko", message: "Error controlado", error }).status(500);
+    }
+  });
+
+
+  /// MANTENIMIENTO DE DETALLE FACTURA ///
+  app.post(`/api/${process.env.VERSION}/factur/manten_detalle_factur`, async (req, res, next) => {
+    try {
+      let query1;
+    
+      var co_factur = req.body.co_factur;
+      var co_operac = req.body.co_operac;
+      var ti_accion = req.body.ti_accion;
+      var im_abonad = req.body.im_abonad;
+
+      if (im_abonad == null || im_abonad.trim() == "") {
+        res
+        .json({ res: "ko", message: "Ingrese el Pago." })
+        .status(500);
+      } else {
+        query1 = `select * from refactur.fb_manten_detalle_factur(
+          cast (${co_factur} as integer),
+          cast (${co_operac} as integer),
+          '${ti_accion}',
+          cast (${im_abonad} as numeric)
+        )`;
+
+      bitacora.control(query1, req.url);
+      const operac = await BD.storePostgresql(query1);
+      // con esto muestro msj
+      if (operac.codRes != 99) {
+        // con esto muestro msj
+        if (operac[0].co_respue == "-1") {
+          res.json({ res: "ko", message: operac[0].no_respue }).status(500);
+        }
+        res.json({ res: "ok", message: operac[0].no_respue }).status(200);
+      } else {
+        res
+          .json({ res: "ko", message: "Error en la query", operac })
+          .status(500);
+      }
+    }
+  } catch (error) {
+    res.json({ res: "ko", message: "Error controlado", error }).status(500);
+  }
   });
 
   ///ELIMINAR DETALLE DE LA FACTURA

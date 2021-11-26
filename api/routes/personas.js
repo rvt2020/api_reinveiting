@@ -110,7 +110,6 @@ module.exports = async (app) => {
             var doc_ide = req.body.doc_ide;
             var raz_soc = req.body.raz_soc;
             var nom_com = req.body.nom_com;
-            var swt_pro = req.body.swt_pro;
 
             var cod_per;
 
@@ -130,17 +129,6 @@ module.exports = async (app) => {
             if (personas.codRes == 99) {
                 // con esto muestro msj
                 res.json({ res: 'ko', message: "Error al insertar Persona.", personas }).status(200)
-            }
-            if (swt_pro == 1 || swt_pro == 0) {
-                const query2 = `select reordcom.insert_provee(
-                    cast(${cod_per} as integer), '${swt_pro}'
-                );`;
-                bitacora.control(query2, req.url)
-                const prov = await BD.storePostgresql(query2);
-                if (prov.codRes == 99) {
-                    // con esto muestro msj
-                    res.json({ res: 'ko', message: "Error al insertar Switch proveedor.", prov }).status(200)
-                }
             }
             res.json({ res: 'ok', message: "Se registró datos correctamente" }).status(500)
             
