@@ -134,6 +134,9 @@ module.exports = async app => {
       im_amorti = req.body.im_amorti;
       im_detrac = req.body.im_detrac;
       no_coment = req.body.no_coment;
+      co_moneda = req.body.co_moneda;
+      nu_cueban = req.body.nu_cueban;
+      no_observ = req.body.no_observ;
 
       query1 = `select * from refactur.fb_amorti_factur(
         ${pn_regist},
@@ -142,7 +145,10 @@ module.exports = async app => {
         ${co_entfin},
         ${im_amorti},
         ${im_detrac},
-        '${no_coment}'
+        '${no_coment}',
+        ${co_moneda},
+        '${nu_cueban}',
+        '${no_observ}'
       )`;
 
       bitacora.control(query1, req.url);
@@ -533,15 +539,15 @@ module.exports = async app => {
     }
   });
 
-  /// CATALOGO PROVEEDOR ///
+  /// CATALOGO BANCO ///
   app.get(`/api/${process.env.VERSION}/factur/catalogo/tctipdoc`, async (req, res, next) => {
     try {
       let query1;
 
       query1 = `
-          select co_entfin, no_entfin
-          from wfpublic.tcentfin
-        `;
+        select co_entfin, no_entfin
+        from wfpublic.tcentfin
+      `;
             
       bitacora.control(query1, req.url);
       const operac = await BD.storePostgresql(query1);
@@ -558,7 +564,33 @@ module.exports = async app => {
       res.json({ res: "ko", message: "Error controlado", error }).status(500);
     }
   });
+  
+  /// CATALOGO BANCO ///
+  app.get(`/api/${process.env.VERSION}/factur/catalogo/tcmonabo`, async (req, res, next) => {
+    try {
+      let query1;
 
+      query1 = `
+        select co_moneda, no_moneda
+        from wfpublic.tcmoneda
+        where co_moneda in (15,28)
+      `;
+            
+      bitacora.control(query1, req.url);
+      const operac = await BD.storePostgresql(query1);
+      // con esto muestro msj
+      if (operac.codRes != 99) {
+        // con esto muestro msj
+        res.json({ res: "ok", message: "Success", operac }).status(200);
+      } else {
+        res
+          .json({ res: "ko", message: "Error en la query", operac })
+          .status(500);
+      }
+    } catch (error) {
+      res.json({ res: "ko", message: "Error controlado", error }).status(500);
+    }
+  });
   
 
   // CLIENTE

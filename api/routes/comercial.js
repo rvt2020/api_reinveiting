@@ -263,7 +263,9 @@ module.exports = async app => {
 
       var co_ordcom = req.body.co_ordcom;
       var co_comart = req.body.co_comart;
+      var co_marveh = req.body.co_marveh;
       var co_modveh = req.body.co_modveh;
+      var no_modveh = req.body.no_modveh;
       var nu_anomod = req.body.nu_anomod;
       var nu_serveh = req.body.nu_serveh;
       var nu_motveh = req.body.nu_motveh;
@@ -279,11 +281,17 @@ module.exports = async app => {
         im_preven = '';
       }
       
+      if (no_modveh == null || no_modveh.trim() == ''){
+        no_modveh = '';
+      }
+      
       query1 = `select * from reventas.fb_insert_vehicu(
         ${co_ordcom},
         ${co_comart},
+        ${co_marveh},
         ${co_modveh},
-        ${nu_anomod},
+        '${no_modveh}',
+         ${nu_anomod},
         '${nu_serveh}',
         '${nu_motveh}',
         '${no_colveh}',
