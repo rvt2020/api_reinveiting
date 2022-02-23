@@ -419,16 +419,18 @@ module.exports = async app => {
       var ca_articu = req.body.ca_articu;
       var co_moneda = req.body.co_moneda;
       var im_preuni = req.body.im_preuni;
+      var no_descri = req.body.no_descri;
       var ti_accion = req.body.ti_accion;
 
       query1 = `select * from reordcom.fb_manten_produc_ordcom(
-                cast (${co_ordcom} as integer),
-                cast (${co_articu} as integer),
-                cast (${ca_articu} as numeric),
-                cast (${co_moneda} as integer),
-                cast (${im_preuni} as numeric),
-                '${ti_accion}'
-            )`;
+            cast (${co_ordcom} as integer),
+            cast (${co_articu} as integer),
+            cast (${ca_articu} as numeric),
+            cast (${co_moneda} as integer),
+            cast (${im_preuni} as numeric),
+            '${no_descri}',
+            '${ti_accion}'
+        )`;
 
       bitacora.control(query1, req.url);
       const operac = await BD.storePostgresql(query1);

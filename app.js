@@ -42,6 +42,7 @@ require("./api/routes/comercial")(app);
 require("./api/routes/llamadas")(app);
 require("./api/routes/factur")(app);
 require("./api/routes/pdfs")(app);
+require("./api/routes/tiv")(app);
 
 // Registro de puerto y servidor.
 app.disable("x-powered-by");

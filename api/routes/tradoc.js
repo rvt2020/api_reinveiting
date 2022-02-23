@@ -324,6 +324,30 @@ module.exports = async app => {
           .json({ res: "ko", message: "Error en la query", operac })
           .status(500);
       }
+    } catch (error) {   
+      res.json({ res: "ko", message: "Error controlado", error }).status(500);
+    }
+  });
+
+  /// DETALLE DE CADA TRAMITE DOCUMENTARIO SERVICIO///
+  app.post(`/api/${process.env.VERSION}/tradoc/listar_detall_servic_tradoc`, async (req, res, next) => {
+    try {
+      let query1;
+      var co_tradoc = req.body.co_tradoc;
+
+      query1 = `select * from retradoc.fb_listar_detall_servic_tradoc( '${co_tradoc}' )`;
+
+      bitacora.control(query1, req.url);
+      const operac = await BD.storePostgresql(query1);
+      // con esto muestro msj
+      if (operac.codRes != 99) {
+        // con esto muestro msj
+        res.json({ res: "ok", message: "Success", operac }).status(200);
+      } else {
+        res
+          .json({ res: "ko", message: "Error en la query", operac })
+          .status(500);
+      }
     } catch (error) {
       res.json({ res: "ko", message: "Error controlado", error }).status(500);
     }
@@ -361,6 +385,71 @@ module.exports = async app => {
       res.json({ res: "ko", message: "Error controlado", error }).status(500);
     }
   });
+
+  /// LISTAR SERVICIOS ENCOTRADOS TRAMITE DOCUMENTARIO ///
+  app.post(`/api/${process.env.VERSION}/tradoc/listar_servic_encont`, async (req, res, next) => {
+    try {
+      let query1;
+
+      var co_tradoc = req.body.co_tradoc;
+      var co_operac = req.body.co_operac;
+      var co_plaveh = req.body.co_plaveh;
+      var no_client = req.body.no_client;
+      
+      query1 = `select * from retradoc.fb_listar_servic_encont(
+                '${co_tradoc}',
+                '${co_operac}',
+                '${co_plaveh}',
+                '${no_client}'
+            )`;
+
+      bitacora.control(query1, req.url);
+      const operac = await BD.storePostgresql(query1);
+      // con esto muestro msj
+      if (operac.codRes != 99) {
+        // con esto muestro msj
+        res.json({ res: "ok", message: "Success", operac }).status(200);
+      } else {
+        res
+          .json({ res: "ko", message: "Error en la query", operac })
+          .status(500);
+      }
+    } catch (error) {
+      res.json({ res: "ko", message: "Error controlado", error }).status(500);
+    }
+  });
+
+  /// MANTENIMIENTO DE SERVICIO TRAMITE DOCUMENTARIO ///
+  app.post(`/api/${process.env.VERSION}/tradoc/manten_servic_tradoc`, async (req, res, next) => {
+    try {
+      let query1;
+
+      var co_tradoc = req.body.co_tradoc;
+      var co_opeser = req.body.co_opeser;
+      var ti_accion = req.body.ti_accion;
+
+      query1 = `select * from retradoc.fb_manten_servic_tradoc(
+                ${co_tradoc},
+                ${co_opeser},
+                '${ti_accion}'
+            )`;
+
+      bitacora.control(query1, req.url);
+      const operac = await BD.storePostgresql(query1);
+      // con esto muestro msj
+      if (operac.codRes != 99) {
+        // con esto muestro msj
+        res.json({ res: "ok", message: "Success", operac }).status(200);
+      } else {
+        res
+          .json({ res: "ko", message: "Error en la query", operac })
+          .status(500);
+      }
+    } catch (error) {
+      res.json({ res: "ko", message: "Error controlado", error }).status(500);
+    }
+  });
+
 
   /// ADJUNTOS DEL TRAMITE DOCUMENTARIO SELECCIONADA
   app.post(`/api/${process.env.VERSION}/tradoc/listar_arcadj_tradoc`, async (req, res, next) => {
@@ -425,6 +514,7 @@ module.exports = async app => {
     }
   });
 
+  
   /// | PROVEEDOR ///
   app.get(`/api/${process.env.VERSION}/tradoc/catalogo/tcprovee`, async (req, res, next) => {
     try {

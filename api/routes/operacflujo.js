@@ -348,7 +348,8 @@ module.exports = async (app) => {
                         select co_servic, ti_servic, ti_tratal
                         from reoperac.tbopeser
                         where co_operac = cast ('${cod_ope}' as integer)
-                    );
+                    )
+                    order by sv.no_servic;
                 `;
                 bitacora.control(q_lisser, req.url);
                 const lisser = await BD.storePostgresql(q_lisser);
@@ -379,6 +380,7 @@ module.exports = async (app) => {
                         ar.no_articu, 0 as im_preuni, 0 as va_cantid, 'C' as ti_opcion
                     from wfarticu.tbarticu ar
                     where ar.no_articu ilike '%'|| '${descrip}' ||'%'
+                    order by ar.no_articu
                 `;
                 bitacora.control(q_lismat, req.url);
                 const lismat = await BD.storePostgresql(q_lismat);
@@ -399,7 +401,7 @@ module.exports = async (app) => {
                         ti_opcion: lismat[i].ti_opcion
                     });
                 } 
-            }
+            }   
             // lista de Servicios agregados a la operacion
             let q_lisseradd = `
                 select
