@@ -184,11 +184,39 @@ module.exports = async (app) => {
             }else{
                 if(tip_rep.toUpperCase() == 'D'){ // DETALLADO
                     query = `select 
-                        fe_inipro, fe_finpro, co_operac, no_operac, no_estado, no_person,
-                        co_plaveh, no_marveh, no_modveh, nu_anomod, no_colveh, 
-                        nu_serveh, nu_motveh, ti_servic, se_ventas, se_costos,
-                        se_margen, se_rentab, ma_ventas, ma_costos, ma_margen,
-                        ma_rentab, ma_sd, to_ventas, im_totigv, to_costos, to_margen, to_rentab
+                        fe_inipro, 
+                        fe_finpro, 
+                        co_operac, 
+                        no_operac, 
+                        no_estado, 
+                        no_person,
+                        co_plaveh, 
+                        no_marveh, 
+                        no_modveh, 
+                        nu_anomod, 
+                        no_colveh, 
+                        nu_serveh, 
+                        nu_motveh, 
+                        ti_servic, 
+                        se_ventas, 
+                        se_costos,
+                        se_margen, 
+                        se_rentab, 
+                        ma_ventas, 
+                        ma_costos, 
+                        ma_margen,
+                        ma_rentab, 
+                        ma_sd, 
+                        to_ventas::numeric(10,1)::numeric(10,2) as va_ventas,
+                        (to_ventas * 0.18)::numeric(10,1)::numeric(10,2) as va_igvven,
+                        (to_ventas * 1.18)::numeric(10,1)::numeric(10,2) as to_ventas,
+                        
+                        to_costos::numeric(10,1)::numeric(10,2) as va_costos,
+                        (to_costos * 0.18)::numeric(10,1)::numeric(10,2) as va_igvcos,
+                        (to_costos * 1.18)::numeric(10,1)::numeric(10,2) as to_costos, 
+                        
+                        to_margen::numeric(10,1)::numeric(10,2), 
+                        to_rentab
                     from reoperacfbmostrar_produccion_operaciones(
                         '${cod_ope}',
                         '${pla_veh}',
@@ -198,9 +226,26 @@ module.exports = async (app) => {
                     );`;
                 }else if(tip_rep.toUpperCase() == 'R'){
                     query = `select 
-                        no_period, no_estado, se_ventas, se_costos,
-                        se_margen, se_rentab, ma_ventas, ma_costos, ma_margen,
-                        ma_rentab, ma_sd, to_ventas, im_totigv, to_costos, to_margen, to_rentab
+                        no_period, 
+                        no_estado, 
+                        se_ventas, 
+                        se_costos,
+                        se_margen, 
+                        se_rentab, 
+                        ma_ventas, 
+                        ma_costos, 
+                        ma_margen,
+                        ma_rentab, 
+                        ma_sd, 
+                        to_ventas::numeric(10,1)::numeric(10,2) as va_ventas,
+                        (to_ventas * 0.18)::numeric(10,1)::numeric(10,2) as va_igvven,
+                        (to_ventas * 1.18)::numeric(10,1)::numeric(10,2) as to_ventas,
+                        
+                        to_costos::numeric(10,1)::numeric(10,2) as va_costos,
+                        (to_costos * 0.18)::numeric(10,1)::numeric(10,2) as va_igvcos,
+                        (to_costos * 1.18)::numeric(10,1)::numeric(10,2) as to_costos, 
+                        to_margen::numeric(10,1)::numeric(10,2), 
+                        to_rentab
                     from reoperacfbmostrar_produccion_operaciones(
                         '${cod_ope}',
                         '${pla_veh}',
