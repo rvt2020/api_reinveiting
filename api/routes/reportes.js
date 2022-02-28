@@ -171,13 +171,15 @@ module.exports = async (app) => {
             var pla_veh = req.body.pla_veh;            
             var fec_des = req.body.fec_des;
             var fec_has = req.body.fec_has;
-            var tip_rep = req.body.tip_rep;            
+            var tip_rep = req.body.tip_rep;
+            var tip_pro = req.body.tip_pro;            
             var query;
             
             if (cod_ope == null || cod_ope.trim() == ''){cod_ope = '';}
             if (pla_veh == null || pla_veh.trim() == ''){pla_veh = '';}
             if (fec_des == null || fec_des.trim() == ''){fec_des = '';}
             if (fec_has == null || fec_has.trim() == ''){fec_has = '';}
+            if (tip_pro == null || tip_pro.trim() == ''){tip_pro = '';}
             
             if(tip_rep == null || tip_rep.trim() == ''){
                 res.json({ res: 'ko', message: "Por favor defina el tipo de reporte (R,D)"}).status(500)
@@ -217,12 +219,13 @@ module.exports = async (app) => {
                         
                         to_margen::numeric(10,1)::numeric(10,2), 
                         to_rentab
-                    from reoperacfbmostrar_produccion_operaciones(
+                    from reoperac.fbmostrar_produccion_operaciones(
                         '${cod_ope}',
                         '${pla_veh}',
                         '${fec_des}',
                         '${fec_has}',
-                        '${tip_rep}'
+                        '${tip_rep}',
+                        '${tip_pro}'
                     );`;
                 }else if(tip_rep.toUpperCase() == 'R'){
                     query = `select 
@@ -246,12 +249,13 @@ module.exports = async (app) => {
                         (to_costos * 1.18)::numeric(10,1)::numeric(10,2) as to_costos, 
                         to_margen::numeric(10,1)::numeric(10,2), 
                         to_rentab
-                    from reoperacfbmostrar_produccion_operaciones(
+                    from reoperac.fbmostrar_produccion_operaciones(
                         '${cod_ope}',
                         '${pla_veh}',
                         '${fec_des}',
                         '${fec_has}',
-                        '${tip_rep}'
+                        '${tip_rep}',
+                        '${tip_pro}'
                     );`;   
                 }
                 bitacora.control(query, req.url)
