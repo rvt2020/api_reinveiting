@@ -172,7 +172,8 @@ module.exports = async (app) => {
             var fec_des = req.body.fec_des;
             var fec_has = req.body.fec_has;
             var tip_rep = req.body.tip_rep;
-            var tip_pro = req.body.tip_pro;            
+            var tip_pro = req.body.tip_pro;
+            var tip_sed = req.body.tip_sed;            
             var query;
             
             if (cod_ope == null || cod_ope.trim() == ''){cod_ope = '';}
@@ -180,6 +181,7 @@ module.exports = async (app) => {
             if (fec_des == null || fec_des.trim() == ''){fec_des = '';}
             if (fec_has == null || fec_has.trim() == ''){fec_has = '';}
             if (tip_pro == null || tip_pro.trim() == ''){tip_pro = '';}
+            if (tip_sed == null || tip_sed.trim() == ''){tip_sed = '';}
             
             if(tip_rep == null || tip_rep.trim() == ''){
                 res.json({ res: 'ko', message: "Por favor defina el tipo de reporte (R,D)"}).status(500)
@@ -225,7 +227,8 @@ module.exports = async (app) => {
                         '${fec_des}',
                         '${fec_has}',
                         '${tip_rep}',
-                        '${tip_pro}'
+                        '${tip_pro}',
+                        '${tip_sed}'
                     );`;
                 }else if(tip_rep.toUpperCase() == 'R'){
                     query = `select 
@@ -255,7 +258,8 @@ module.exports = async (app) => {
                         '${fec_des}',
                         '${fec_has}',
                         '${tip_rep}',
-                        '${tip_pro}'
+                        '${tip_pro}',
+                        '${tip_sed}'
                     );`;   
                 }
                 bitacora.control(query, req.url)
